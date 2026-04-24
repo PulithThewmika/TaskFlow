@@ -28,13 +28,25 @@ jobs:
         # Below is an example of passing the GitHub Secret to application configuration.
         SPRING_DATASOURCE_URL: ${{ secrets.MONGO_URI }}
         
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        node-version: '18'
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Build Frontend
-      working-directory: ./taskflow-frontend
-      run: |
-        npm install
-        npm run build
+    - name: Configure Azure Web App Settings (MONGO_URI)
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your Azure App Service name
+        app-settings-json: |
+          [
+            {
+              "name": "SPRING_DATASOURCE_URL",
+              "value": "${{ secrets.MONGO_URI }}"
+            }
+          ]
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your Azure App Service name
+        package: './taskflow-backend/target/*.jar'
