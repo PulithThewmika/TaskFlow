@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isAxiosError } from 'axios';
 import { loginUser, registerUser } from '../api/authApi';
 import type { LoginPayload, RegisterPayload, AuthResponse } from '../types/auth.types';
 
@@ -13,8 +14,12 @@ export const useAuth = () => {
       const response = await loginUser(payload);
       localStorage.setItem('token', response.token);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+    } catch (err) {
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Login failed');
+      } else {
+        setError('Login failed');
+      }
       return null;
     } finally {
       setLoading(false);
@@ -27,8 +32,12 @@ export const useAuth = () => {
       setError(null);
       const response = await registerUser(payload);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+    } catch (err) {
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Registration failed');
+      } else {
+        setError('Registration failed');
+      }
       return null;
     } finally {
       setLoading(false);
