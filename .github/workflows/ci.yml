@@ -9,6 +9,10 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     name: Build & Test
@@ -67,25 +71,15 @@ jobs:
         name: backend-jar
         path: ./deploy
 
-    - name: Azure Login
+    - name: Azure Login (OIDC)
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Configure App Settings
-      uses: azure/appservice-settings@v1
-      with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-        app-settings-json: |
-          [
-            {
-              "name": "SPRING_DATASOURCE_URL",
-              "value": "${{ secrets.MONGO_URI }}"
-            }
-          ]
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E299B6F27C834D789D4E3BA1E95FA8EC }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1D595BF32F304450AF5C0107E6EFE5D0 }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_04F80C47DDCE43A4BFA34E2E7E716CC5 }}
 
     - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        app-name: 'taskflow-backend'  # TODO: Replace with your actual Azure Web App name
         package: ./deploy/*.jar
