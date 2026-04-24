@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { AuthResponse } from '../types/auth.types';
 
@@ -20,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedName = localStorage.getItem('userName');
     const storedEmail = localStorage.getItem('userEmail');
     if (storedToken && storedName && storedEmail) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setToken(storedToken);
       setUser({ name: storedName, email: storedEmail });
     }
