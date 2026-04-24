@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Task } from '../../types/task.types';
 import Badge from '../ui/Badge';
-import { getPriorityColor, getStatusColor } from '../../utils/statusUtils';
+import { getPriorityColor } from '../../utils/statusUtils';
 import { formatDeadline, isOverdue } from '../../utils/dateUtils';
 
 interface TaskCardProps {
