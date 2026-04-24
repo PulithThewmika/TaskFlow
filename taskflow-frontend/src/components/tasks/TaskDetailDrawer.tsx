@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Task } from '../../types/task.types';
+import type { Task, TaskStatus } from '../../types/task.types';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { getStatusColor, getStatusLabel, getNextStatuses, getPriorityColor } from '../../utils/statusUtils';
@@ -9,7 +9,7 @@ interface TaskDetailDrawerProps {
   task: Task | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (taskId: number, status: any) => void;
+  onStatusChange: (taskId: number, status: TaskStatus) => void;
   onDelete: (taskId: number) => void;
 }
 
