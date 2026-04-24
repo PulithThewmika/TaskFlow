@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { isAxiosError } from 'axios';
 import { getTasksByProject, createTask, updateTaskStatus, deleteTask } from '../api/taskApi';
 import type { Task, CreateTaskPayload, TaskStatus } from '../types/task.types';
 
@@ -12,8 +13,12 @@ export const useTasks = (projectId: number) => {
       setLoading(true);
       const data = await getTasksByProject(projectId);
       setTasks(data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch tasks');
+    } catch (err) {
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Failed to fetch tasks');
+      } else {
+        setError('Failed to fetch tasks');
+      }
     } finally {
       setLoading(false);
     }
@@ -21,6 +26,7 @@ export const useTasks = (projectId: number) => {
 
   useEffect(() => {
     if (projectId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchTasks();
     }
   }, [projectId, fetchTasks]);
