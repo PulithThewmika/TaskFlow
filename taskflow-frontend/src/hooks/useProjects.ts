@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { isAxiosError } from 'axios';
 import { getProjects, createProject, deleteProject } from '../api/projectApi';
 import type { Project, CreateProjectPayload } from '../types/project.types';
 
@@ -12,14 +13,19 @@ export const useProjects = () => {
       setLoading(true);
       const data = await getProjects();
       setProjects(data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch projects');
+    } catch (err) {
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Failed to fetch projects');
+      } else {
+        setError('Failed to fetch projects');
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
   }, [fetchProjects]);
 
