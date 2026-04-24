@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading ? 'Loading...' : children}
+      {children}
     </button>
   );
 };
