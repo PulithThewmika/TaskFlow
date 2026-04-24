@@ -16,7 +16,7 @@ const DashboardPage: React.FC = () => {
       try {
         const data = await getDashboardStats();
         setStats(data);
-      } catch (err) {
+      } catch {
         console.error('Failed to load dashboard stats');
       }
     };
