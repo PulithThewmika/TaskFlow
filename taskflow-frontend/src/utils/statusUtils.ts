@@ -5,10 +5,10 @@ import { TaskStatus, TaskPriority } from '../types/task.types';
  */
 export const getStatusColor = (status: TaskStatus): string => {
   const colors: Record<TaskStatus, string> = {
-    [TaskStatus.TODO]: '#6B7280',
-    [TaskStatus.IN_PROGRESS]: '#3B82F6',
-    [TaskStatus.IN_REVIEW]: '#F59E0B',
-    [TaskStatus.DONE]: '#10B981',
+    [TaskStatus.TODO]: '#4a5180',
+    [TaskStatus.IN_PROGRESS]: '#f59e0b',
+    [TaskStatus.IN_REVIEW]: '#8b5cf6',
+    [TaskStatus.DONE]: '#10b981',
   };
   return colors[status];
 };
@@ -18,10 +18,10 @@ export const getStatusColor = (status: TaskStatus): string => {
  */
 export const getPriorityColor = (priority: TaskPriority): string => {
   const colors: Record<TaskPriority, string> = {
-    [TaskPriority.LOW]: '#6B7280',
-    [TaskPriority.MEDIUM]: '#3B82F6',
-    [TaskPriority.HIGH]: '#F59E0B',
-    [TaskPriority.CRITICAL]: '#EF4444',
+    [TaskPriority.LOW]: '#6b7280',
+    [TaskPriority.MEDIUM]: '#3b82f6',
+    [TaskPriority.HIGH]: '#f97316',
+    [TaskPriority.CRITICAL]: '#ef4444',
   };
   return colors[priority];
 };
