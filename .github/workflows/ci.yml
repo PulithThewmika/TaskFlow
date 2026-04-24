@@ -81,5 +81,5 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'taskflow-backend'  # TODO: Replace with your actual Azure Web App name
+        app-name: 'TaskFlow-backend'  
         package: ./deploy/*.jar
