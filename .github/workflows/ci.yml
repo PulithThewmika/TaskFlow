@@ -6,11 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
+    name: Build & Test
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - uses: actions/checkout@v4
@@ -21,24 +23,59 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build with Maven
+    - name: Build Backend with Maven
       working-directory: ./taskflow-backend
       run: mvn clean package -DskipTests
       env:
-        # Note: The project currently uses MySQL + Spring Data JPA.
-        # If you are passing a MongoDB URI, you will need to replace the JPA repository with Spring Data MongoDB.
-        # Below is an example of passing the GitHub Secret to application configuration.
         SPRING_DATASOURCE_URL: ${{ secrets.MONGO_URI }}
-        
+
+    - name: Run Backend Tests
+      working-directory: ./taskflow-backend
+      run: mvn test -Dspring.profiles.active=test
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Frontend Dependencies
+      working-directory: ./taskflow-frontend
+      run: npm ci --legacy-peer-deps || npm install
+
+    - name: Build Frontend
+      working-directory: ./taskflow-frontend
+      run: npm run build
+
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-jar
+        path: ./taskflow-backend/target/*.jar
+
+  deploy:
+    name: Deploy to Azure
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download Backend Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-jar
+        path: ./deploy
+
     - name: Azure Login
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Configure Azure Web App Settings (MONGO_URI)
+    - name: Configure App Settings
       uses: azure/appservice-settings@v1
       with:
-        app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your Azure App Service name
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         app-settings-json: |
           [
             {
@@ -50,5 +87,5 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your Azure App Service name
-        package: './taskflow-backend/target/*.jar'
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        package: ./deploy/*.jar
