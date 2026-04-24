@@ -22,38 +22,50 @@ const LoginPage: React.FC = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Login to TaskFlow</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              data-testid="email-input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              data-testid="password-input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
+        <div className="auth-logo">
+          <div className="auth-logo-icon">T</div>
+          <span className="auth-logo-text">TaskFlow</span>
+        </div>
+
+        <div className="auth-form-container">
+          <h1>Sign in</h1>
+
+          {error && (
+            <div className="error-message" role="alert">{error}</div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                data-testid="email-input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                data-testid="password-input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+
+          <p className="auth-link">
+            Don't have an account? <Link to="/register">Register</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
