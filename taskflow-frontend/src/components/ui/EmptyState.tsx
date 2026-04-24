@@ -2,17 +2,18 @@ import React from 'react';
 
 interface EmptyStateProps {
   message?: string;
-  icon?: string;
+  submessage?: string;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   message = 'No tasks yet',
-  icon = '📋',
+  submessage = 'Add your first task to get started',
 }) => {
   return (
     <div className="empty-state" data-testid="empty-board-state">
-      <span className="empty-state-icon">{icon}</span>
-      <p>{message}</p>
+      <div className="empty-state-icon">📋</div>
+      <h3>{message}</h3>
+      <p>{submessage}</p>
     </div>
   );
 };
