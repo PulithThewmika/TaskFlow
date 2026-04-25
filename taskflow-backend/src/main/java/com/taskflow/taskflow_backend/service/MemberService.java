@@ -26,7 +26,7 @@ public class MemberService {
         this.userRepository = userRepository;
     }
 
-    public ProjectMember addMember(Long projectId, String email) {
+    public ProjectMember addMember(String projectId, String email) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectId));
 
@@ -41,11 +41,11 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
-    public List<ProjectMember> getMembers(Long projectId) {
+    public List<ProjectMember> getMembers(String projectId) {
         return memberRepository.findByProjectId(projectId);
     }
 
-    public void removeMember(Long projectId, Long userId) {
+    public void removeMember(String projectId, String userId) {
         ProjectMember member = memberRepository.findByProjectIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         memberRepository.delete(member);

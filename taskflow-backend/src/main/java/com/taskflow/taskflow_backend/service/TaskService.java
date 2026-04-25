@@ -33,7 +33,7 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public TaskResponse createTask(Long projectId, CreateTaskRequest request) {
+    public TaskResponse createTask(String projectId, CreateTaskRequest request) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectId));
 
@@ -55,7 +55,7 @@ public class TaskService {
         return mapToResponse(saved);
     }
 
-    public TaskResponse updateTaskStatus(Long taskId, TaskStatus newStatus) {
+    public TaskResponse updateTaskStatus(String taskId, TaskStatus newStatus) {
         Task task = taskRepository.findById(taskId)
             .orElseThrow(() -> new TaskNotFoundException("Task not found: " + taskId));
 
@@ -64,13 +64,13 @@ public class TaskService {
         return mapToResponse(taskRepository.save(task));
     }
 
-    public List<TaskResponse> getTasksByProjectId(Long projectId) {
+    public List<TaskResponse> getTasksByProjectId(String projectId) {
         return taskRepository.findByProjectId(projectId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<TaskResponse> getOverdueTasks(Long projectId) {
+    public List<TaskResponse> getOverdueTasks(String projectId) {
         return taskRepository.findByProjectId(projectId).stream()
             .filter(t -> t.getDeadline() != null
                       && t.getDeadline().isBefore(LocalDate.now())
@@ -79,7 +79,7 @@ public class TaskService {
             .collect(Collectors.toList());
     }
 
-    public void deleteTask(Long taskId) {
+    public void deleteTask(String taskId) {
         if (!taskRepository.existsById(taskId)) {
             throw new TaskNotFoundException("Task not found: " + taskId);
         }

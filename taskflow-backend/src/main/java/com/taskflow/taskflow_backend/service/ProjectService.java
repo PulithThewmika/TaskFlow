@@ -35,13 +35,13 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
-    public ProjectResponse getProjectById(Long id) {
+    public ProjectResponse getProjectById(String id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + id));
         return mapToResponse(project);
     }
 
-    public void deleteProject(Long id) {
+    public void deleteProject(String id) {
         if (!projectRepository.existsById(id)) {
             throw new ProjectNotFoundException("Project not found: " + id);
         }
