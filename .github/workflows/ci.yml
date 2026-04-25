@@ -31,7 +31,7 @@ jobs:
       working-directory: ./taskflow-backend
       run: mvn clean package -DskipTests
       env:
-        SPRING_DATASOURCE_URL: ${{ secrets.MONGO_URI }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
 
     - name: Run Backend Tests
       working-directory: ./taskflow-backend
