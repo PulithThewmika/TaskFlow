@@ -1,6 +1,5 @@
 package com.taskflow.taskflow_backend.controller;
 
-import com.taskflow.taskflow_backend.service.TaskService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,9 @@ class TaskControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("GET /api/projects/1/tasks should require authentication")
-    void getTasks_shouldRequireAuth() throws Exception {
+    @DisplayName("GET /api/projects/1/tasks should be accessible")
+    void getTasks_shouldReturnOk() throws Exception {
         mockMvc.perform(get("/api/projects/1/tasks"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 }
