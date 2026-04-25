@@ -17,14 +17,14 @@ export const TaskPriority = {
 export type TaskPriority = typeof TaskPriority[keyof typeof TaskPriority];
 
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
   deadline: string | null;
-  projectId: number;
-  assigneeId: number | null;
+  projectId: string;
+  assigneeId: string | null;
   assigneeName: string | null;
   createdAt: string;
   updatedAt: string;
@@ -35,7 +35,7 @@ export interface CreateTaskPayload {
   description?: string;
   priority: TaskPriority;
   deadline?: string;
-  assigneeId?: number;
+  assigneeId?: string;
 }
 
 export interface UpdateTaskStatusPayload {

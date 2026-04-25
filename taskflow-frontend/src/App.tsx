@@ -1,33 +1,39 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
-import ProjectsPage from './pages/ProjectsPage';
+import { useAuthContext } from './context/AuthContext';
 import BoardPage from './pages/BoardPage';
+import DashboardPage from './pages/DashboardPage';
+import LoginPage from './pages/LoginPage';
+import ProjectsPage from './pages/ProjectsPage';
+import RegisterPage from './pages/RegisterPage';
+
+const ProtectedRoutes = () => {
+  const { isAuthenticated } = useAuthContext();
+  return isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />;
+};
+
+const GuestOnlyRoutes = () => {
+  const { isAuthenticated } = useAuthContext();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Outlet />;
+};
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route element={<GuestOnlyRoutes />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
 
-          {/* Protected Routes */}
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/projects/:id/board" element={<BoardPage />} />
-          </Route>
+      <Route element={<ProtectedRoutes />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id/board" element={<BoardPage />} />
+      </Route>
 
-          {/* Default redirect */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
 

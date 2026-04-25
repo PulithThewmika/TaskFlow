@@ -35,7 +35,7 @@ export const useProjects = () => {
     return newProject;
   };
 
-  const removeProject = async (id: number) => {
+  const removeProject = async (id: string) => {
     await deleteProject(id);
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
