@@ -72,7 +72,7 @@ Add your own media files into `docs/media/` and these sections will render beaut
 
 - Frontend: React, TypeScript, Vite, React Router
 - Backend: Spring Boot, Java, JWT, REST APIs
-- Database: MySQL
+- Database: MongoDB
 - Testing: JUnit 5, Mockito, Playwright
 
 ---
@@ -106,14 +106,13 @@ npx playwright test --headed
 
 ---
 
-## Team
+## Documentation
 
-| Student | ID | Role | Testing Ownership |
-|---|---|---|---|
-| [Name] | IT23XXXXXX | Backend + Testing | JUnit 5 Parameterized Tests |
-| [Name] | IT23XXXXXX | Backend + Testing | JUnit 5 Mockito Tests |
-| [Name] | IT23XXXXXX | Frontend + Testing | Playwright E2E Flow |
-| [Name] | IT23XXXXXX | Frontend + Testing | Playwright Validation Tests |
+- [Docs Home](docs/README.md)
+- [API Reference](docs/API.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Setup and Configuration](docs/SETUP.md)
+- [Testing Guide](docs/TESTING.md)
 
 ---
 
