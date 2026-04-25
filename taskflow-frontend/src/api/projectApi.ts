@@ -6,7 +6,7 @@ export const getProjects = async (): Promise<Project[]> => {
   return data;
 };
 
-export const getProjectById = async (id: number): Promise<Project> => {
+export const getProjectById = async (id: string): Promise<Project> => {
   const { data } = await axiosInstance.get<Project>(`/projects/${id}`);
   return data;
 };
@@ -16,6 +16,6 @@ export const createProject = async (payload: CreateProjectPayload): Promise<Proj
   return data;
 };
 
-export const deleteProject = async (id: number): Promise<void> => {
+export const deleteProject = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/projects/${id}`);
 };
