@@ -82,4 +82,4 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: 'TaskFlow-backend'  
-        package: ./deploy/*.jar
+        package: ./deploy
