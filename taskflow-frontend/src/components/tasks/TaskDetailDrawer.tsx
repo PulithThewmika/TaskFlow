@@ -9,8 +9,8 @@ interface TaskDetailDrawerProps {
   task: Task | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (taskId: number, status: TaskStatus) => void;
-  onDelete: (taskId: number) => void;
+  onStatusChange: (taskId: string, status: TaskStatus) => void;
+  onDelete: (taskId: string) => void;
 }
 
 const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({
