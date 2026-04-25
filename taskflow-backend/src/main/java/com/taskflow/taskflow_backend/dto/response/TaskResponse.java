@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 public class TaskResponse {
 
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private TaskStatus status;
     private TaskPriority priority;
     private LocalDate deadline;
-    private Long projectId;
-    private Long assigneeId;
+    private String projectId;
+    private String assigneeId;
     private String assigneeName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -24,8 +24,8 @@ public class TaskResponse {
     public TaskResponse() {}
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -42,11 +42,11 @@ public class TaskResponse {
     public LocalDate getDeadline() { return deadline; }
     public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
 
-    public Long getProjectId() { return projectId; }
-    public void setProjectId(Long projectId) { this.projectId = projectId; }
+    public String getProjectId() { return projectId; }
+    public void setProjectId(String projectId) { this.projectId = projectId; }
 
-    public Long getAssigneeId() { return assigneeId; }
-    public void setAssigneeId(Long assigneeId) { this.assigneeId = assigneeId; }
+    public String getAssigneeId() { return assigneeId; }
+    public void setAssigneeId(String assigneeId) { this.assigneeId = assigneeId; }
 
     public String getAssigneeName() { return assigneeName; }
     public void setAssigneeName(String assigneeName) { this.assigneeName = assigneeName; }
