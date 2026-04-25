@@ -35,7 +35,7 @@ class ProjectServiceTest {
     @BeforeEach
     void setUp() {
         testProject = new Project();
-        testProject.setId(1L);
+        testProject.setId("1");
         testProject.setName("Test Project");
         testProject.setDescription("Test description");
         testProject.setColorTag("#3B82F6");
@@ -57,10 +57,10 @@ class ProjectServiceTest {
     @Test
     @DisplayName("getProjectById: should throw ProjectNotFoundException when not found")
     void getProjectById_shouldThrow_whenNotFound() {
-        when(projectRepository.findById(99L)).thenReturn(Optional.empty());
+        when(projectRepository.findById("99")).thenReturn(Optional.empty());
 
         assertThrows(ProjectNotFoundException.class,
-            () -> projectService.getProjectById(99L));
+            () -> projectService.getProjectById("99"));
     }
 
     @Test
@@ -77,10 +77,10 @@ class ProjectServiceTest {
     @Test
     @DisplayName("deleteProject: should throw when project not found")
     void deleteProject_shouldThrow_whenNotFound() {
-        when(projectRepository.existsById(99L)).thenReturn(false);
+        when(projectRepository.existsById("99")).thenReturn(false);
 
         assertThrows(ProjectNotFoundException.class,
-            () -> projectService.deleteProject(99L));
+            () -> projectService.deleteProject("99"));
 
         verify(projectRepository, never()).deleteById(any());
     }

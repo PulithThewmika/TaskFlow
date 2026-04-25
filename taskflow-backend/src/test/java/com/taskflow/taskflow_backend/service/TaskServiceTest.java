@@ -43,11 +43,11 @@ class TaskServiceTest {
     @BeforeEach
     void setUp() {
         testProject = new Project();
-        testProject.setId(1L);
+        testProject.setId("1");
         testProject.setName("Test Project");
 
         testTask = new Task();
-        testTask.setId(1L);
+        testTask.setId("1");
         testTask.setTitle("Fix login bug");
         testTask.setStatus(TaskStatus.TODO);
         testTask.setProject(testProject);
@@ -58,10 +58,10 @@ class TaskServiceTest {
     void createTask_shouldSaveAndReturn_whenProjectExists() {
         CreateTaskRequest request = new CreateTaskRequest("Fix login bug", "desc",
                                                           TaskPriority.HIGH, null, null);
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(testProject));
+        when(projectRepository.findById("1")).thenReturn(Optional.of(testProject));
         when(taskRepository.save(any(Task.class))).thenReturn(testTask);
 
-        TaskResponse response = taskService.createTask(1L, request);
+        TaskResponse response = taskService.createTask("1", request);
 
         assertAll(
             () -> assertNotNull(response),
@@ -74,11 +74,11 @@ class TaskServiceTest {
     @Test
     @DisplayName("createTask: should throw ProjectNotFoundException when project missing")
     void createTask_shouldThrow_whenProjectNotFound() {
-        when(projectRepository.findById(99L)).thenReturn(Optional.empty());
+        when(projectRepository.findById("99")).thenReturn(Optional.empty());
         CreateTaskRequest request = new CreateTaskRequest("Task", null, TaskPriority.LOW, null, null);
 
         assertThrows(ProjectNotFoundException.class,
-            () -> taskService.createTask(99L, request));
+            () -> taskService.createTask("99", request));
 
         verify(taskRepository, never()).save(any());
     }
@@ -86,10 +86,10 @@ class TaskServiceTest {
     @Test
     @DisplayName("updateTaskStatus: should throw when DB throws unexpected exception")
     void updateTaskStatus_shouldThrow_whenRepositoryFails() {
-        when(taskRepository.findById(1L)).thenThrow(new RuntimeException("DB connection lost"));
+        when(taskRepository.findById("1")).thenThrow(new RuntimeException("DB connection lost"));
 
         assertThrows(RuntimeException.class,
-            () -> taskService.updateTaskStatus(1L, TaskStatus.IN_PROGRESS));
+            () -> taskService.updateTaskStatus("1", TaskStatus.IN_PROGRESS));
     }
 
     @Test
@@ -110,12 +110,12 @@ class TaskServiceTest {
         futureTask.setStatus(TaskStatus.TODO); // Should be excluded
         futureTask.setProject(testProject);
 
-        when(taskRepository.findByProjectId(1L))
+        when(taskRepository.findByProjectId("1"))
             .thenReturn(List.of(overdueTask, doneTask, futureTask));
 
-        List<TaskResponse> overdue = taskService.getOverdueTasks(1L);
+        List<TaskResponse> overdue = taskService.getOverdueTasks("1");
 
         assertEquals(1, overdue.size());
-        verify(taskRepository, times(1)).findByProjectId(1L);
+        verify(taskRepository, times(1)).findByProjectId("1");
     }
 }
