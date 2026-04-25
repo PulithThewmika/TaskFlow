@@ -26,7 +26,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(
+                    "/",
                     "/api/auth/**",
+                    "/api/**",
                     "/api/health",
                     "/api/health/**",
                     "/swagger-ui.html",
@@ -34,7 +36,7 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/actuator/**"
                 ).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             );
 
         return http.build();
