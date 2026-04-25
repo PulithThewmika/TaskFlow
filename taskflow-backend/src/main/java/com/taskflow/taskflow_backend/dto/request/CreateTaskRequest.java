@@ -16,13 +16,13 @@ public class CreateTaskRequest {
 
     private LocalDate deadline;
 
-    private Long assigneeId;
+    private String assigneeId;
 
     // Constructors
     public CreateTaskRequest() {}
 
     public CreateTaskRequest(String title, String description, TaskPriority priority,
-                             LocalDate deadline, Long assigneeId) {
+                             LocalDate deadline, String assigneeId) {
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -43,6 +43,6 @@ public class CreateTaskRequest {
     public LocalDate getDeadline() { return deadline; }
     public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
 
-    public Long getAssigneeId() { return assigneeId; }
-    public void setAssigneeId(Long assigneeId) { this.assigneeId = assigneeId; }
+    public String getAssigneeId() { return assigneeId; }
+    public void setAssigneeId(String assigneeId) { this.assigneeId = assigneeId; }
 }
