@@ -2,55 +2,51 @@ package com.taskflow.taskflow_backend.model;
 
 import com.taskflow.taskflow_backend.enums.TaskPriority;
 import com.taskflow.taskflow_backend.enums.TaskStatus;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tasks")
+@Document(collection = "tasks")
 public class Task {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String title;
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.TODO;
 
-    @Enumerated(EnumType.STRING)
     private TaskPriority priority = TaskPriority.MEDIUM;
 
     private LocalDate deadline;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
+    @DBRef
     private Project project;
 
-    @ManyToOne
-    @JoinColumn(name = "assignee_id")
+    @DBRef
     private User assignee;
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     // Constructors
     public Task() {}
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
