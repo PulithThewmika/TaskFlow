@@ -1,12 +1,12 @@
 package com.taskflow.taskflow_backend.repository;
 
 import com.taskflow.taskflow_backend.model.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findByMembersUserId(Long userId);
+public interface ProjectRepository extends MongoRepository<Project, String> {
+    List<Project> findByMembersUserId(String userId);
 }
