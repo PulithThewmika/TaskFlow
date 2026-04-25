@@ -12,20 +12,20 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${https://task-flow-one-rust.vercel.app : http://localhost:5173}")
+    @Value("${TASKFLOW_FRONTEND_URL:${TASKFLOW_FRONTENT_URL:http://localhost:5173}}")
     private String frontendUrl;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", frontendUrl)); // Local Vite + Vercel
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", frontendUrl)); // Local Vite + deployed
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
