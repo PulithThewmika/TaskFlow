@@ -1,7 +1,10 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+const normalizedApiBaseUrl = apiBaseUrl ? apiBaseUrl.replace(/\/+$/, '') : '';
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8081/api',
+  baseURL: normalizedApiBaseUrl ? `${normalizedApiBaseUrl}/api` : 'http://localhost:8081/api',
   headers: {
     'Content-Type': 'application/json',
   },
