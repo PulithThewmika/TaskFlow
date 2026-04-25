@@ -20,13 +20,13 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectMember>> getMembers(@PathVariable Long projectId) {
+    public ResponseEntity<List<ProjectMember>> getMembers(@PathVariable String projectId) {
         return ResponseEntity.ok(memberService.getMembers(projectId));
     }
 
     @PostMapping
     public ResponseEntity<ProjectMember> addMember(
-            @PathVariable Long projectId,
+            @PathVariable String projectId,
             @RequestBody Map<String, String> body) {
         String email = body.get("email");
         ProjectMember member = memberService.addMember(projectId, email);
@@ -35,8 +35,8 @@ public class MemberController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> removeMember(
-            @PathVariable Long projectId,
-            @PathVariable Long userId) {
+            @PathVariable String projectId,
+            @PathVariable String userId) {
         memberService.removeMember(projectId, userId);
         return ResponseEntity.noContent().build();
     }
