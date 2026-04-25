@@ -22,13 +22,13 @@ public class TaskController {
     }
 
     @GetMapping("/projects/{projectId}/tasks")
-    public ResponseEntity<List<TaskResponse>> getTasksByProject(@PathVariable Long projectId) {
+    public ResponseEntity<List<TaskResponse>> getTasksByProject(@PathVariable String projectId) {
         return ResponseEntity.ok(taskService.getTasksByProjectId(projectId));
     }
 
     @PostMapping("/projects/{projectId}/tasks")
     public ResponseEntity<TaskResponse> createTask(
-            @PathVariable Long projectId,
+            @PathVariable String projectId,
             @Valid @RequestBody CreateTaskRequest request) {
         TaskResponse response = taskService.createTask(projectId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -36,14 +36,14 @@ public class TaskController {
 
     @PatchMapping("/tasks/{taskId}/status")
     public ResponseEntity<TaskResponse> updateTaskStatus(
-            @PathVariable Long taskId,
+            @PathVariable String taskId,
             @Valid @RequestBody UpdateTaskStatusRequest request) {
         TaskResponse response = taskService.updateTaskStatus(taskId, request.getStatus());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+    public ResponseEntity<Void> deleteTask(@PathVariable String taskId) {
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
