@@ -1,29 +1,27 @@
 package com.taskflow.taskflow_backend.model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "project_members")
+@Document(collection = "project_members")
 public class ProjectMember {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
+    @DBRef
     private Project project;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @DBRef
     private User user;
 
     private String role; // e.g., "OWNER", "MEMBER"
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime joinedAt;
 
     // Constructors
@@ -36,8 +34,8 @@ public class ProjectMember {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
