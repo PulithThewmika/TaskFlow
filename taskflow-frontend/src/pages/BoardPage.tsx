@@ -9,7 +9,7 @@ import type { Task } from '../types/task.types';
 
 const BoardPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const projectId = Number(id);
+  const projectId = id ?? '';
   const { tasks, loading, addTask, changeStatus, removeTask } = useTasks(projectId);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
