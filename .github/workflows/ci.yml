@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "QA-LAKDINU" ]
   pull_request:
     branches: [ "main" ]
 
@@ -12,60 +12,105 @@ env:
 permissions:
   id-token: write
   contents: read
+  checks: write        # needed for test-reporter to publish results
 
 jobs:
-  build:
-    name: Build & Test
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 1 — Backend: compile, unit + integration tests, package
+  # ─────────────────────────────────────────────────────────────────────────
+  backend-test:
+    name: Backend — Build & Test (JUnit 5)
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout source
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: maven          # cache ~/.m2 to speed up subsequent runs
 
-    - name: Build Backend with Maven
+    # ── Compile only (fast fail before tests) ──────────────────────────────
+    - name: Compile backend
       working-directory: ./taskflow-backend
-      run: mvn clean package -DskipTests
+      run: mvn clean compile -q
+
+    # ── Run all 37 JUnit 5 tests with the "test" Spring profile ────────────
+    # Flapdoodle auto-starts an embedded MongoDB, so no external DB needed.
+    # JWT_SECRET is provided via env so @Value("${jwt.secret}") resolves.
+    - name: Run JUnit 5 tests
+      working-directory: ./taskflow-backend
+      run: mvn test -Dspring.profiles.active=test
+      env:
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+    # ── Package the JAR (skip tests — already ran above) ──────────────────
+    - name: Package backend JAR
+      working-directory: ./taskflow-backend
+      run: mvn package -DskipTests -q
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
 
-    - name: Run Backend Tests
-      working-directory: ./taskflow-backend
-      run: mvn test -Dspring.profiles.active=test
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    # ── Publish Surefire XML test results to the GitHub Actions UI ─────────
+    - name: Publish Test Results
+      uses: mikepenz/action-junit-report@v4
+      if: always()           # run even if tests fail, so we can see the report
       with:
-        node-version: '20'
+        report_paths: './taskflow-backend/target/surefire-reports/TEST-*.xml'
+        check_name: 'JUnit 5 Test Report'
+        fail_on_failure: true
 
-    - name: Install Frontend Dependencies
-      working-directory: ./taskflow-frontend
-      run: npm ci --legacy-peer-deps || npm install
-
-    - name: Build Frontend
-      working-directory: ./taskflow-frontend
-      run: npm run build
-
-    - name: Upload Backend Artifact
+    # ── Upload the JAR as a build artifact ────────────────────────────────
+    - name: Upload backend JAR artifact
       uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: backend-jar
         path: ./taskflow-backend/target/*.jar
+        retention-days: 7
 
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 2 — Frontend: install & build
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend-build:
+    name: Frontend — Install & Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: ./taskflow-frontend/package-lock.json
+
+    - name: Install frontend dependencies
+      working-directory: ./taskflow-frontend
+      run: npm ci --legacy-peer-deps || npm install
+
+    - name: Build frontend
+      working-directory: ./taskflow-frontend
+      run: npm run build
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB 3 — Deploy to Azure (only on push to main)
+  # ─────────────────────────────────────────────────────────────────────────
   deploy:
     name: Deploy to Azure
-    needs: build
+    needs: [ backend-test, frontend-build ]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Download Backend Artifact
+    - name: Download backend JAR
       uses: actions/download-artifact@v4
       with:
         name: backend-jar
@@ -81,5 +126,5 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'TaskFlow-backend'  
+        app-name: 'TaskFlow-backend'
         package: ./deploy
