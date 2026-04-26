@@ -20,16 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * DashboardControllerTest — 3 tests
- *
- * Uses @SpringBootTest + @AutoConfigureMockMvc for full context: HTTP layer +
- * service + database together. DashboardService is replaced with a Mockito bean.
- *
- * Authentication: JwtUtil is mocked so that Bearer "test-token" is accepted by
- * the real JwtAuthenticationFilter and resolves to "john@example.com", allowing
- * authentication.getName() in the controller to return the correct email.
- */
+
+//DashboardControllerTest — 3 tests
+ 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -62,7 +55,7 @@ class DashboardControllerTest {
         return builder.header("Authorization", "Bearer " + TEST_TOKEN);
     }
 
-    // ── Test 1 ────────────────────────────────────────────────────────────────
+    // Test 1 
 
     @Test
     @DisplayName("getStats_Returns200: GET /api/dashboard/stats → 200")
@@ -75,7 +68,7 @@ class DashboardControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    // ── Test 2 ────────────────────────────────────────────────────────────────
+    // Test 2 
 
     @Test
     @DisplayName("getStats_HasAllFields: Response has all 6 stat fields")
@@ -93,7 +86,7 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.overdueCount").exists());
     }
 
-    // ── Test 3 ────────────────────────────────────────────────────────────────
+    // Test 3 
 
     @Test
     @DisplayName("getStats_ReflectsRealData: Stats counts match the service data")

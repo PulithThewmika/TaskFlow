@@ -27,16 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * MemberControllerTest — 5 tests
- *
- * Uses @SpringBootTest + @AutoConfigureMockMvc for full context: HTTP layer +
- * service + database together. MemberService is replaced with a Mockito bean.
- *
- * Authentication: JwtUtil is mocked so that Bearer "test-token" is accepted by
- * the real JwtAuthenticationFilter and resolves to "john@example.com" — the same
- * pattern that makes ProjectControllerTest work reliably with Spring Security 6.
- */
+//MemberControllerTest — 5 tests
+
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -80,7 +72,7 @@ class MemberControllerTest {
         return builder.header("Authorization", "Bearer " + TEST_TOKEN);
     }
 
-    // ── Test 1 ────────────────────────────────────────────────────────────────
+    // Test 1 
 
     @Test
     @DisplayName("getMembers_Returns200: GET /api/projects/{id}/members → 200")
@@ -96,7 +88,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$[0].role").value("MEMBER"));
     }
 
-    // ── Test 2 ────────────────────────────────────────────────────────────────
+    // Test 2 
 
     @Test
     @DisplayName("addMember_ValidEmail_Returns201: POST → 201 + ProjectMember body")
@@ -114,7 +106,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.role").value("MEMBER"));
     }
 
-    // ── Test 3 ────────────────────────────────────────────────────────────────
+    // Test 3 
 
     @Test
     @DisplayName("addMember_InvalidEmail_ReturnsError: Non-existent user → 500 error")
@@ -131,7 +123,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.message").value("User not found with email: ghost@example.com"));
     }
 
-    // ── Test 4 ────────────────────────────────────────────────────────────────
+    // Test 4 
 
     @Test
     @DisplayName("addMember_Duplicate_ReturnsError: Already member → 500 error")
@@ -148,7 +140,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.message").value("User is already a member of this project"));
     }
 
-    // ── Test 5 ────────────────────────────────────────────────────────────────
+    // Test 5 
 
     @Test
     @DisplayName("removeMember_Returns204: DELETE /api/projects/{id}/members/{userId} → 204")

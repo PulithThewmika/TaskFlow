@@ -29,7 +29,7 @@ class HealthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // ── Test 1 ────────────────────────────────────────────────────────────────
+    // Test 1 
 
     @Test
     @DisplayName("health_Returns200: GET /api/health → 200")
@@ -39,7 +39,7 @@ class HealthControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    // ── Test 2 ────────────────────────────────────────────────────────────────
+    // Test 2 
 
     @Test
     @DisplayName("health_HasStatusUp: Body contains \"status\": \"UP\"")
@@ -49,7 +49,7 @@ class HealthControllerTest {
                 .andExpect(jsonPath("$.status").value("UP"));
     }
 
-    // ── Test 3 ────────────────────────────────────────────────────────────────
+    // Test 3 
 
     @Test
     @DisplayName("health_HasTimestamp: Body contains \"timestamp\" field")
