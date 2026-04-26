@@ -3,7 +3,10 @@ package com.taskflow.taskflow_backend.service;
 import com.taskflow.taskflow_backend.dto.request.CreateProjectRequest;
 import com.taskflow.taskflow_backend.dto.response.ProjectResponse;
 import com.taskflow.taskflow_backend.exception.ProjectNotFoundException;
+import com.taskflow.taskflow_backend.model.User;
+import com.taskflow.taskflow_backend.repository.MemberRepository;
 import com.taskflow.taskflow_backend.repository.ProjectRepository;
+import com.taskflow.taskflow_backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,9 +34,25 @@ class ProjectServiceTest {
     @Autowired
     ProjectRepository projectRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    private User testUser;
+
     @BeforeEach
     void setup() {
         projectRepository.deleteAll();
+        memberRepository.deleteAll();
+        userRepository.deleteAll();
+
+        testUser = new User();
+        testUser.setName("Test Owner");
+        testUser.setEmail("owner@test.com");
+        testUser.setPassword("password");
+        testUser = userRepository.save(testUser);
     }
 
     // ─── 1 ──────────────────────────────────────────────────────────────────
@@ -43,7 +62,7 @@ class ProjectServiceTest {
         CreateProjectRequest request =
             new CreateProjectRequest("My Project", "A test project", "#6366f1");
 
-        ProjectResponse response = projectService.createProject(request);
+        ProjectResponse response = projectService.createProject(request, testUser.getEmail());
 
         assertAll(
             () -> assertNotNull(response),
@@ -60,7 +79,7 @@ class ProjectServiceTest {
         CreateProjectRequest request =
             new CreateProjectRequest("ID Project", "desc", "#000000");
 
-        ProjectResponse response = projectService.createProject(request);
+        ProjectResponse response = projectService.createProject(request, testUser.getEmail());
 
         assertNotNull(response.getId(), "MongoDB should auto-generate a non-null ID");
         assertFalse(response.getId().isBlank());
@@ -70,9 +89,9 @@ class ProjectServiceTest {
     @Test
     @DisplayName("3. getAllProjects_ReturnsAll — save 3 projects → getAllProjects returns 3")
     void getAllProjects_ReturnsAll() {
-        projectService.createProject(new CreateProjectRequest("Alpha",   "d", "#111111"));
-        projectService.createProject(new CreateProjectRequest("Beta",    "d", "#222222"));
-        projectService.createProject(new CreateProjectRequest("Gamma",   "d", "#333333"));
+        projectService.createProject(new CreateProjectRequest("Alpha",   "d", "#111111"), testUser.getEmail());
+        projectService.createProject(new CreateProjectRequest("Beta",    "d", "#222222"), testUser.getEmail());
+        projectService.createProject(new CreateProjectRequest("Gamma",   "d", "#333333"), testUser.getEmail());
 
         List<ProjectResponse> projects = projectService.getAllProjects();
 
@@ -94,7 +113,7 @@ class ProjectServiceTest {
     @DisplayName("5. getProjectById_Found — save then getById → returns correct project")
     void getProjectById_Found() {
         ProjectResponse saved = projectService.createProject(
-            new CreateProjectRequest("Find Me", "desc", "#abcdef"));
+            new CreateProjectRequest("Find Me", "desc", "#abcdef"), testUser.getEmail());
 
         ProjectResponse found = projectService.getProjectById(saved.getId());
 
@@ -118,7 +137,7 @@ class ProjectServiceTest {
     @DisplayName("7. deleteProject_RemovesFromDb — delete → existsById returns false")
     void deleteProject_RemovesFromDb() {
         ProjectResponse saved = projectService.createProject(
-            new CreateProjectRequest("To Delete", "desc", "#ffffff"));
+            new CreateProjectRequest("To Delete", "desc", "#ffffff"), testUser.getEmail());
 
         projectService.deleteProject(saved.getId());
 
