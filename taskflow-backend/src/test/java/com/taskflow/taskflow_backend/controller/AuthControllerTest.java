@@ -1,6 +1,7 @@
 package com.taskflow.taskflow_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taskflow.taskflow_backend.config.JwtAuthenticationFilter;
 import com.taskflow.taskflow_backend.dto.request.LoginRequest;
 import com.taskflow.taskflow_backend.dto.request.RegisterRequest;
 import com.taskflow.taskflow_backend.dto.response.AuthResponse;
@@ -33,6 +34,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private AuthResponse mockAuthResponse;
 

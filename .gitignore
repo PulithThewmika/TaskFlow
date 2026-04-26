@@ -85,6 +85,7 @@ replay_pid*
 # Spring Boot
 HELP.md
 taskflow-backend/src/main/resources/application-dev.properties
+taskflow-backend/src/main/resources/application.properties
 
 # ==============================================================================
 # Node.js & Vite (Frontend)
