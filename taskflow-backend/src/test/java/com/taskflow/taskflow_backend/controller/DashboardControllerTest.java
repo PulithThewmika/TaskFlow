@@ -91,7 +91,7 @@ class DashboardControllerTest {
     @Test
     @DisplayName("getStats_ReflectsRealData: Stats counts match the service data")
     void getStats_ReflectsRealData() throws Exception {
-        // Simulate: 8 tasks — 2 TODO, 3 IN_PROGRESS, 1 IN_REVIEW, 2 DONE, 1 overdue
+
         DashboardStatsResponse mockStats = new DashboardStatsResponse(8, 2, 3, 1, 2, 1);
         when(dashboardService.getStatsForUser(TEST_EMAIL)).thenReturn(mockStats);
 

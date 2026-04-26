@@ -111,16 +111,16 @@ class MemberControllerTest {
     @Test
     @DisplayName("addMember_InvalidEmail_ReturnsError: Non-existent user → 500 error")
     void addMember_InvalidEmail_ReturnsError() throws Exception {
-        when(memberService.addMember(PROJECT_ID, "ghost@example.com"))
-                .thenThrow(new IllegalArgumentException("User not found with email: ghost@example.com"));
+        when(memberService.addMember(PROJECT_ID, "unknown@example.com"))
+                .thenThrow(new IllegalArgumentException("User not found with email: unknown@example.com"));
 
-        Map<String, String> body = Map.of("email", "ghost@example.com");
+        Map<String, String> body = Map.of("email", "unknown@example.com");
 
         mockMvc.perform(withAuth(post("/api/projects/{id}/members", PROJECT_ID))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("User not found with email: ghost@example.com"));
+                .andExpect(jsonPath("$.message").value("User not found with email: unknown@example.com"));
     }
 
     // Test 4 

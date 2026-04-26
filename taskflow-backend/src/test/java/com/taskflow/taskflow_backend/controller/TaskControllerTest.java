@@ -151,7 +151,6 @@ class TaskControllerTest {
         @Test
         @DisplayName("updateTaskStatus_ValidTransition_Returns200: PATCH /api/tasks/{id}/status → 200")
         void updateTaskStatus_ValidTransition_Returns200() throws Exception {
-                // TODO → IN_PROGRESS is a valid transition
                 TaskResponse updatedResponse = new TaskResponse();
                 updatedResponse.setId("task-001");
                 updatedResponse.setTitle("Implement login feature");
@@ -176,7 +175,6 @@ class TaskControllerTest {
         @Test
         @DisplayName("updateTaskStatus_InvalidTransition_Returns400: TODO→DONE → 400")
         void updateTaskStatus_InvalidTransition_Returns400() throws Exception {
-                // TODO → DONE is NOT allowed per TaskStatusTransitionValidator
                 UpdateTaskStatusRequest request = new UpdateTaskStatusRequest(TaskStatus.DONE);
 
                 when(taskService.updateTaskStatus(eq("task-001"), eq(TaskStatus.DONE)))
