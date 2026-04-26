@@ -150,7 +150,7 @@ function Sidebar({ view, setView, dark, toggleDark, projects, onLogout, userName
 
 export default function RebuildApp() {
   const { login, register, loading: authLoading, error: authError } = useAuth();
-  const { projects, loading: projectsLoading, error: projectsError, addProject, removeProject } = useProjects();
+  const { projects, setProjects, loading: projectsLoading, error: projectsError, addProject, removeProject } = useProjects();
   const [page, setPage] = useState<Page>(localStorage.getItem('token') ? 'app' : 'landing');
   const [view, setView] = useState<View>('dashboard');
   const [dark, setDark] = useState(true);
@@ -229,7 +229,11 @@ export default function RebuildApp() {
   };
 
   const createTaskHandler = async (payload: CreateTaskPayload) => {
-    try { await addTask(payload); pushToast('Task created successfully', 'success'); }
+    try { 
+      await addTask(payload); 
+      setProjects((prev) => prev.map((p) => p.id === selectedProjectId ? { ...p, taskCount: p.taskCount + 1 } : p));
+      pushToast('Task created successfully', 'success'); 
+    }
     catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to create task' : 'Failed to create task', 'error'); }
   };
 
@@ -239,7 +243,10 @@ export default function RebuildApp() {
   };
 
   const deleteTaskHandler = async (taskId: string) => {
-    try { await removeTask(taskId); pushToast('Task deleted', 'success'); }
+    try { 
+      await removeTask(taskId); 
+      pushToast('Task deleted', 'success'); 
+    }
     catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete task' : 'Failed to delete task', 'error'); }
   };
 
