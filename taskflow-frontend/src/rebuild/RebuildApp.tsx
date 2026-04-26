@@ -141,7 +141,6 @@ function Sidebar({ view, setView, dark, toggleDark, setPage, projects, onLogout,
         <div className="sb-sec-label" style={{ marginTop: 14 }}>Projects</div>
         {projects.map((p) => <div key={p.id} className={`sb-item${view === 'board' ? ' active' : ''}`} onClick={() => setView('board')}><span className="pdot" style={{ background: p.colorTag || '#6366f1' }} /><span style={{ fontSize: 13 }}>{p.name}</span></div>)}
         <div className="sb-sec-label" style={{ marginTop: 14 }}>Navigation</div>
-        <div className="sb-item" onClick={() => setPage('landing')}><span className="sb-icon">🏠</span><span>Landing Page</span></div>
         <div className="sb-item" onClick={onLogout}><span className="sb-icon">↪</span><span>Logout</span></div>
       </div>
       <div className="sb-footer"><div style={{ padding: '0 2px 8px' }}><ThemeToggle dark={dark} toggle={toggleDark} /></div><div className="user-row"><div className="u-av" style={{ background: '#6366f128', color: '#818cf8' }}>{initialsFromName(userName)}</div><div><div className="u-name">{userName}</div><div className="u-role">Authenticated User</div></div></div></div>
@@ -263,7 +262,7 @@ export default function RebuildApp() {
   };
 
   const deleteProjectHandler = async (projectId: string) => {
-    try { await removeProject(projectId); if (selectedProjectId === projectId) setSelectedProjectId(''); pushToast('Project deleted', 'success'); }
+    try { await removeProject(projectId); if (selectedProjectId === projectId) setSelectedProjectId(''); setView('projects'); pushToast('Project deleted', 'success'); }
     catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete project' : 'Failed to delete project', 'error'); }
   };
 
