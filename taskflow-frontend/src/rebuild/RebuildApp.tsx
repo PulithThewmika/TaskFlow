@@ -131,7 +131,7 @@ function AuthPage({ mode, onSubmit, onToggle, dark, toggleDark, loading, error, 
   );
 }
 
-function Sidebar({ view, setView, dark, toggleDark, setPage, projects, onLogout, userName }: { view: View; setView: (v: View) => void; dark: boolean; toggleDark: () => void; setPage: (page: Page) => void; projects: Project[]; onLogout: () => void; userName: string }) {
+function Sidebar({ view, setView, dark, toggleDark, projects, onLogout, userName }: { view: View; setView: (v: View) => void; dark: boolean; toggleDark: () => void; projects: Project[]; onLogout: () => void; userName: string }) {
   return (
     <div className="sidebar">
       <div className="sidebar-logo"><LogoMark /><div><div className="logo-name">TaskFlow</div><div className="logo-sub">Live API Mode</div></div></div>
@@ -282,7 +282,7 @@ export default function RebuildApp() {
       {effectivePage === 'register' && <AuthPage mode="register" dark={dark} toggleDark={toggleDark} loading={authLoading} error={authError} onBack={() => setPage('landing')} onToggle={() => setPage('login')} onSubmit={(f) => handleRegister({ name: f.name, email: f.email, password: f.password })} />}
       {effectivePage === 'app' && (
         <div className="app-shell">
-          <Sidebar view={view} setView={setView} dark={dark} toggleDark={toggleDark} setPage={setPage} projects={projects} onLogout={logout} userName={localStorage.getItem('userName') || 'User'} />
+          <Sidebar view={view} setView={setView} dark={dark} toggleDark={toggleDark} projects={projects} onLogout={logout} userName={localStorage.getItem('userName') || 'User'} />
           <div className="main-area">
             <div className="topbar"><div style={{ flex: 1 }}><div className="topbar-ttl">{view === 'dashboard' ? 'Overview' : view === 'projects' ? 'Projects' : 'Kanban Board'}</div><div className="topbar-sub">{selectedProject?.name ?? 'No project selected'}</div></div><div className="topbar-actions">{dashboardStats && dashboardStats.overdueCount > 0 && <div className="overdue-pill">⚠ {dashboardStats.overdueCount} overdue</div>}<ThemeToggle dark={dark} toggle={toggleDark} /></div></div>
             <div className="content-area">
