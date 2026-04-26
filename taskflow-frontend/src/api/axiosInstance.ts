@@ -4,7 +4,7 @@ const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.tr
 const normalizedApiBaseUrl = apiBaseUrl ? apiBaseUrl.replace(/\/+$/, '') : '';
 
 const axiosInstance = axios.create({
-  baseURL: normalizedApiBaseUrl ? `${normalizedApiBaseUrl}/api` : 'http://localhost:8081/api',
+  baseURL: normalizedApiBaseUrl ? `${normalizedApiBaseUrl}/api` : 'http://localhost:8080/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -28,7 +28,6 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
