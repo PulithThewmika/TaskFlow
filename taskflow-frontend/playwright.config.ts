@@ -6,7 +6,8 @@ export default defineConfig({
   retries: 1,
   use: {
     baseURL: 'http://localhost:5173',   // Vite dev server
-    headless: false,                    // Show browser for demo
+    // @ts-ignore
+    headless: process.env.CI ? true : false,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },

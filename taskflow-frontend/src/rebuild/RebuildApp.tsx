@@ -327,9 +327,9 @@ export default function RebuildApp() {
               )}
             </div>
           </div>
-          <div className="toast-wrap">{toasts.map((t) => <div key={t.id} className={`toast ${t.kind}`}>{t.message}</div>)}</div>
         </div>
       )}
+      <div className="toast-wrap">{toasts.map((t) => <div key={t.id} className={`toast ${t.kind}`}>{t.message}</div>)}</div>
     </div>
   );
 }

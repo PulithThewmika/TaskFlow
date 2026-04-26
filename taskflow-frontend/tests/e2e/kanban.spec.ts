@@ -1,0 +1,83 @@
+import { test, expect } from '@playwright/test';
+import { uniqueEmail, registerUser, createProjectViaUI, createTaskViaUI } from './helpers/test-utils';
+
+test.describe('Kanban Board — Drag and Drop & Transitions', () => {
+
+  async function setupBoard(page: import('@playwright/test').Page) {
+    const email = uniqueEmail();
+    const password = 'Test@1234';
+    const name = 'Kanban Test User';
+
+    await registerUser(page, name, email, password);
+    await expect(page.getByText('Sign in to your workspace')).toBeVisible({ timeout: 10000 });
+
+    await page.locator('.field').filter({ hasText: 'Email' }).locator('.field-input').fill(email);
+    await page.locator('.field').filter({ hasText: 'Password' }).locator('.field-input').fill(password);
+    await page.getByRole('button', { name: /Sign in/i }).click();
+    await expect(page.locator('.app-shell')).toBeVisible({ timeout: 10000 });
+
+    const projectName = `Kanban Project ${Date.now()}`;
+    await createProjectViaUI(page, projectName);
+
+    await page.locator('.prj-card', { hasText: projectName }).click();
+    await expect(page.locator('.board-cols')).toBeVisible({ timeout: 5000 });
+  }
+
+  test('valid transition: TODO to IN_PROGRESS', async ({ page }) => {
+    await setupBoard(page);
+    await createTaskViaUI(page, 'Transition Task');
+
+    // Drag from TODO to IN_PROGRESS
+    const taskCard = page.locator('.task-card', { hasText: 'Transition Task' });
+    const inProgressCol = page.locator('.board-col').filter({ hasText: 'In Progress' }).locator('.col-body');
+
+    await taskCard.dragTo(inProgressCol);
+
+    // Verify task is now in IN_PROGRESS
+    await expect(inProgressCol.locator('.task-card', { hasText: 'Transition Task' })).toBeVisible();
+    
+    // Verify TODO is empty
+    const todoCol = page.locator('.board-col').filter({ hasText: 'To Do' }).locator('.col-body');
+    await expect(todoCol.locator('.task-card', { hasText: 'Transition Task' })).toHaveCount(0);
+  });
+
+  test('invalid transition: TODO to DONE should be blocked', async ({ page }) => {
+    await setupBoard(page);
+    await createTaskViaUI(page, 'Blocked Task');
+
+    const taskCard = page.locator('.task-card', { hasText: 'Blocked Task' });
+    const doneCol = page.locator('.board-col').filter({ hasText: 'Done' }).locator('.col-body');
+
+    await taskCard.dragTo(doneCol);
+
+    // Verify task did NOT move to DONE
+    await expect(doneCol.locator('.task-card', { hasText: 'Blocked Task' })).toHaveCount(0);
+
+    // Verify task is still in TODO
+    const todoCol = page.locator('.board-col').filter({ hasText: 'To Do' }).locator('.col-body');
+    await expect(todoCol.locator('.task-card', { hasText: 'Blocked Task' })).toBeVisible();
+  });
+
+  test('multi-step transitions: TODO -> IN_PROGRESS -> IN_REVIEW -> DONE', async ({ page }) => {
+    await setupBoard(page);
+    await createTaskViaUI(page, 'Multi Step Task');
+
+    const taskCard = page.locator('.task-card', { hasText: 'Multi Step Task' });
+    const inProgressCol = page.locator('.board-col').filter({ hasText: 'In Progress' }).locator('.col-body');
+    const inReviewCol = page.locator('.board-col').filter({ hasText: 'In Review' }).locator('.col-body');
+    const doneCol = page.locator('.board-col').filter({ hasText: 'Done' }).locator('.col-body');
+
+    // 1. TODO -> IN_PROGRESS
+    await taskCard.dragTo(inProgressCol);
+    await expect(inProgressCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
+
+    // 2. IN_PROGRESS -> IN_REVIEW
+    await taskCard.dragTo(inReviewCol);
+    await expect(inReviewCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
+
+    // 3. IN_REVIEW -> DONE
+    await taskCard.dragTo(doneCol);
+    await expect(doneCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
+  });
+
+});
