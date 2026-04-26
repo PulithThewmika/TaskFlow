@@ -165,6 +165,33 @@ html, body, #root { height:100%; font-family:'Outfit', sans-serif; background:va
 .project-select { min-width:220px; max-width:300px; margin-right:8px; margin-bottom:0; }
 .active-prj { border-color:rgba(99,102,241,0.35) !important; }
 .empty-state { padding:18px; text-align:center; color:var(--text-muted); font-size:13px; }
+.member-list { display:flex; flex-direction:column; gap:2px; margin-bottom:20px; max-height:320px; overflow-y:auto; }
+.member-row { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--bg-card); transition:all .2s; }
+.member-row:hover { border-color:var(--border-mid); background:var(--bg-hover); }
+.member-info { flex:1; min-width:0; }
+.member-name { font-size:13.5px; font-weight:500; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.member-email { font-size:11.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.member-role-badge { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 9px; border-radius:99px; flex-shrink:0; }
+.member-role-badge.owner { background:rgba(99,102,241,0.12); color:#818cf8; border:1px solid rgba(99,102,241,0.25); }
+.member-role-badge.member { background:rgba(16,185,129,0.10); color:#6ee7b7; border:1px solid rgba(16,185,129,0.20); }
+.member-remove-btn { padding:4px 10px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid rgba(239,68,68,0.2); background:rgba(239,68,68,0.08); color:#f87171; transition:all .2s; flex-shrink:0; }
+.member-remove-btn:hover { background:rgba(239,68,68,0.18); border-color:rgba(239,68,68,0.4); }
+.invite-section { border-top:1px solid var(--border); padding-top:18px; }
+.invite-row { display:flex; gap:8px; align-items:flex-end; }
+.invite-row .field { flex:1; margin-bottom:0; }
+.invite-row .btn { height:42px; flex-shrink:0; }
+.member-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 16px; color:var(--text-muted); font-size:13px; gap:8px; }
+.member-empty-icon { font-size:32px; opacity:0.5; }
+.member-count-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:600; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.18); color:#818cf8; }
+.prj-card-wrap { position:relative; }
+.prj-delete-btn { position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px; border:1px solid rgba(239,68,68,0.15); background:rgba(239,68,68,0.06); color:#f87171; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; transition:all .2s; z-index:2; }
+.prj-card-wrap:hover .prj-delete-btn { opacity:1; }
+.prj-delete-btn:hover { background:rgba(239,68,68,0.18); border-color:rgba(239,68,68,0.35); transform:scale(1.08); }
+.confirm-modal { background:var(--bg-elevated); border:1px solid var(--border-mid); border-radius:18px; padding:24px; width:380px; max-width:95vw; box-shadow:var(--shadow-xl); animation:slideUp .2s; text-align:center; }
+.confirm-modal-icon { font-size:36px; margin-bottom:14px; }
+.confirm-modal-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:8px; }
+.confirm-modal-desc { font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px; }
+.confirm-modal-actions { display:flex; gap:8px; justify-content:center; }
 @media (max-width: 1024px){ .stats-grid{grid-template-columns:repeat(2,1fr)} .proj-grid,.projects-grid,.feat-grid,.rules-grid{grid-template-columns:1fr 1fr} .hero-board{grid-template-columns:repeat(2,1fr)} .flow-steps{grid-template-columns:1fr 1fr; gap:16px} .flow-steps::before{display:none} }
 @media (max-width: 720px){ .sidebar{display:none} .land-nav,.land-features,.land-flow,.land-tech,.land-rules,.land-cta,.land-footer,.land-hero{padding-left:16px;padding-right:16px} .feat-grid,.projects-grid,.proj-grid,.rules-grid,.stats-grid,.hero-board,.flow-steps{grid-template-columns:1fr} .land-nav-links{display:none} .land-footer{flex-direction:column;gap:10px} }
 `;

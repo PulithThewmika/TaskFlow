@@ -26,6 +26,7 @@ TaskFlow uses a standard client-server architecture:
 
 ## Frontend Layers
 
+- **Rebuild Architecture (App Shell)** in `src/rebuild/` (provides global CSS, layout components, and core styles for the new application dashboard)
 - **API clients** in `src/api/`
 - **Stateful hooks** in `src/hooks/`
 - **Page-level routes** in `src/pages/`

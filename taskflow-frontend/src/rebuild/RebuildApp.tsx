@@ -1,7 +1,7 @@
 import { isAxiosError } from 'axios';
 import { useEffect, useMemo, useState, type CSSProperties, type DragEvent } from 'react';
 import { getDashboardStats, type DashboardStats } from '../api/dashboardApi';
-import { getProjectMembers, type ProjectMember } from '../api/memberApi';
+import { getProjectMembers, addProjectMember, removeProjectMember, type ProjectMember } from '../api/memberApi';
 import { getAllTasks } from '../api/taskApi';
 import { useAuth } from '../hooks/useAuth';
 import { useProjects } from '../hooks/useProjects';
@@ -131,7 +131,7 @@ function AuthPage({ mode, onSubmit, onToggle, dark, toggleDark, loading, error, 
   );
 }
 
-function Sidebar({ view, setView, dark, toggleDark, setPage, projects, onLogout, userName }: { view: View; setView: (v: View) => void; dark: boolean; toggleDark: () => void; setPage: (page: Page) => void; projects: Project[]; onLogout: () => void; userName: string }) {
+function Sidebar({ view, setView, dark, toggleDark, projects, onLogout, userName }: { view: View; setView: (v: View) => void; dark: boolean; toggleDark: () => void; projects: Project[]; onLogout: () => void; userName: string }) {
   return (
     <div className="sidebar">
       <div className="sidebar-logo"><LogoMark /><div><div className="logo-name">TaskFlow</div><div className="logo-sub">Live API Mode</div></div></div>
@@ -141,7 +141,6 @@ function Sidebar({ view, setView, dark, toggleDark, setPage, projects, onLogout,
         <div className="sb-sec-label" style={{ marginTop: 14 }}>Projects</div>
         {projects.map((p) => <div key={p.id} className={`sb-item${view === 'board' ? ' active' : ''}`} onClick={() => setView('board')}><span className="pdot" style={{ background: p.colorTag || '#6366f1' }} /><span style={{ fontSize: 13 }}>{p.name}</span></div>)}
         <div className="sb-sec-label" style={{ marginTop: 14 }}>Navigation</div>
-        <div className="sb-item" onClick={() => setPage('landing')}><span className="sb-icon">🏠</span><span>Landing Page</span></div>
         <div className="sb-item" onClick={onLogout}><span className="sb-icon">↪</span><span>Logout</span></div>
       </div>
       <div className="sb-footer"><div style={{ padding: '0 2px 8px' }}><ThemeToggle dark={dark} toggle={toggleDark} /></div><div className="user-row"><div className="u-av" style={{ background: '#6366f128', color: '#818cf8' }}>{initialsFromName(userName)}</div><div><div className="u-name">{userName}</div><div className="u-role">Authenticated User</div></div></div></div>
@@ -151,7 +150,7 @@ function Sidebar({ view, setView, dark, toggleDark, setPage, projects, onLogout,
 
 export default function RebuildApp() {
   const { login, register, loading: authLoading, error: authError } = useAuth();
-  const { projects, loading: projectsLoading, error: projectsError, addProject } = useProjects();
+  const { projects, loading: projectsLoading, error: projectsError, addProject, removeProject } = useProjects();
   const [page, setPage] = useState<Page>(localStorage.getItem('token') ? 'app' : 'landing');
   const [view, setView] = useState<View>('dashboard');
   const [dark, setDark] = useState(true);
@@ -244,6 +243,29 @@ export default function RebuildApp() {
     catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete task' : 'Failed to delete task', 'error'); }
   };
 
+  const reloadMembers = async () => {
+    if (!effectiveProjectId) return;
+    try {
+      const data = await getProjectMembers(effectiveProjectId);
+      setMembers(data.map((m: ProjectMember) => ({ id: m.user.id, name: m.user.name, initials: initialsFromName(m.user.name), color: stringToColor(m.user.id) })));
+    } catch { /* silently fail */ }
+  };
+
+  const addMemberHandler = async (email: string) => {
+    try { await addProjectMember(effectiveProjectId, email); await reloadMembers(); pushToast('Member added successfully', 'success'); }
+    catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to add member' : 'Failed to add member', 'error'); throw err; }
+  };
+
+  const removeMemberHandler = async (userId: string) => {
+    try { await removeProjectMember(effectiveProjectId, userId); await reloadMembers(); pushToast('Member removed', 'success'); }
+    catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to remove member' : 'Failed to remove member', 'error'); }
+  };
+
+  const deleteProjectHandler = async (projectId: string) => {
+    try { await removeProject(projectId); if (selectedProjectId === projectId) setSelectedProjectId(''); setView('projects'); pushToast('Project deleted', 'success'); }
+    catch (err) { pushToast(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete project' : 'Failed to delete project', 'error'); }
+  };
+
   return (
     <div data-theme={dark ? 'dark' : 'light'} style={{ height: '100%' }}>
       <StyleTag dark={dark} />
@@ -260,7 +282,7 @@ export default function RebuildApp() {
       {effectivePage === 'register' && <AuthPage mode="register" dark={dark} toggleDark={toggleDark} loading={authLoading} error={authError} onBack={() => setPage('landing')} onToggle={() => setPage('login')} onSubmit={(f) => handleRegister({ name: f.name, email: f.email, password: f.password })} />}
       {effectivePage === 'app' && (
         <div className="app-shell">
-          <Sidebar view={view} setView={setView} dark={dark} toggleDark={toggleDark} setPage={setPage} projects={projects} onLogout={logout} userName={localStorage.getItem('userName') || 'User'} />
+          <Sidebar view={view} setView={setView} dark={dark} toggleDark={toggleDark} projects={projects} onLogout={logout} userName={localStorage.getItem('userName') || 'User'} />
           <div className="main-area">
             <div className="topbar"><div style={{ flex: 1 }}><div className="topbar-ttl">{view === 'dashboard' ? 'Overview' : view === 'projects' ? 'Projects' : 'Kanban Board'}</div><div className="topbar-sub">{selectedProject?.name ?? 'No project selected'}</div></div><div className="topbar-actions">{dashboardStats && dashboardStats.overdueCount > 0 && <div className="overdue-pill">⚠ {dashboardStats.overdueCount} overdue</div>}<ThemeToggle dark={dark} toggle={toggleDark} /></div></div>
             <div className="content-area">
@@ -282,6 +304,7 @@ export default function RebuildApp() {
                   selectedProjectId={effectiveProjectId}
                   setSelectedProjectId={setSelectedProjectId}
                   onCreateProject={createProjectHandler}
+                  onDeleteProject={deleteProjectHandler}
                   setView={setView}
                 />
               )}
@@ -298,6 +321,8 @@ export default function RebuildApp() {
                   onCreateTask={createTaskHandler}
                   onChangeStatus={statusChangeHandler}
                   onDeleteTask={deleteTaskHandler}
+                  onAddMember={addMemberHandler}
+                  onRemoveMember={removeMemberHandler}
                 />
               )}
             </div>
@@ -309,20 +334,26 @@ export default function RebuildApp() {
   );
 }
 
-function ProjectsPanel({ projects, selectedProjectId, setSelectedProjectId, onCreateProject, setView }: { projects: Project[]; selectedProjectId: string; setSelectedProjectId: (id: string) => void; onCreateProject: (payload: CreateProjectPayload) => Promise<void>; setView: (view: View) => void }) {
+function ProjectsPanel({ projects, selectedProjectId, setSelectedProjectId, onCreateProject, onDeleteProject, setView }: { projects: Project[]; selectedProjectId: string; setSelectedProjectId: (id: string) => void; onCreateProject: (payload: CreateProjectPayload) => Promise<void>; onDeleteProject: (id: string) => Promise<void>; setView: (view: View) => void }) {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', colorTag: '#6366f1' });
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
   return (
     <div className="page-wrap">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}><div><div style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 800 }}>Projects</div><div style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>{projects.length} active projects</div></div><button className="btn btn-primary" onClick={() => setShowCreate(true)}>+ New Project</button></div>
-      <div className="projects-grid">{projects.map((p) => <div key={p.id} className={`prj-card${selectedProjectId === p.id ? ' active-prj' : ''}`} style={{ '--pc': p.colorTag || '#6366f1' } as CSSProperties} onClick={() => { setSelectedProjectId(p.id); setView('board'); }}><div className="prj-card-name">{p.name}</div><span className="prj-tag" style={{ background: `${p.colorTag || '#6366f1'}18`, color: p.colorTag || '#6366f1' }}>{p.memberCount} members</span><div className="prog-bar-wrap"><div className="prog-bar" style={{ width: `${Math.min(100, p.taskCount * 10)}%`, background: p.colorTag || '#6366f1' }} /></div></div>)}</div>
+      <div className="projects-grid">{projects.map((p) => <div key={p.id} className="prj-card-wrap"><div className={`prj-card${selectedProjectId === p.id ? ' active-prj' : ''}`} style={{ '--pc': p.colorTag || '#6366f1' } as CSSProperties} onClick={() => { setSelectedProjectId(p.id); setView('board'); }}><div className="prj-card-name">{p.name}</div><span className="prj-tag" style={{ background: `${p.colorTag || '#6366f1'}18`, color: p.colorTag || '#6366f1' }}>{p.memberCount} members</span><div className="prog-bar-wrap"><div className="prog-bar" style={{ width: `${Math.min(100, p.taskCount * 10)}%`, background: p.colorTag || '#6366f1' }} /></div></div><button className="prj-delete-btn" title="Delete project" onClick={(e) => { e.stopPropagation(); setDeleteTarget(p); }}>🗑</button></div>)}</div>
       {showCreate && <div className="overlay" onClick={(e) => e.target === e.currentTarget && setShowCreate(false)}><div className="modal"><div className="modal-ttl">New Project</div><div className="field"><label className="field-label">Project Name *</label><input className="field-input" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></div><div className="field"><label className="field-label">Description</label><textarea className="field-input" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} /></div><div className="field"><label className="field-label">Color Tag</label><div className="color-picker">{PROJECT_COLORS.map((c) => <button key={c} className={`color-swatch${form.colorTag === c ? ' selected' : ''}`} style={{ background: c }} onClick={() => setForm((f) => ({ ...f, colorTag: c }))} />)}</div></div><div className="modal-foot"><button className="btn btn-ghost" onClick={() => setShowCreate(false)}>Cancel</button><button className="btn btn-primary" onClick={async () => { if (!form.name.trim()) return; await onCreateProject({ name: form.name.trim(), description: form.description.trim() || undefined, colorTag: form.colorTag }); setShowCreate(false); setForm({ name: '', description: '', colorTag: '#6366f1' }); }}>Create Project</button></div></div></div>}
+      {deleteTarget && <div className="overlay" onClick={(e) => e.target === e.currentTarget && setDeleteTarget(null)}><div className="confirm-modal"><div className="confirm-modal-icon">⚠️</div><div className="confirm-modal-title">Delete "{deleteTarget.name}"?</div><div className="confirm-modal-desc">This will permanently delete the project and cannot be undone. All tasks in this project may become orphaned.</div><div className="confirm-modal-actions"><button className="btn btn-ghost" onClick={() => setDeleteTarget(null)}>Cancel</button><button className="btn btn-danger" onClick={async () => { await onDeleteProject(deleteTarget.id); setDeleteTarget(null); }}>Delete Project</button></div></div></div>}
     </div>
   );
 }
 
-function BoardPanel({ tasks, tasksLoading, dark, members, membersLoading, selectedProject, setSelectedProjectId, projects, onCreateTask, onChangeStatus, onDeleteTask }: { tasks: Task[]; tasksLoading: boolean; dark: boolean; members: MemberAvatar[]; membersLoading: boolean; selectedProject: Project | null; setSelectedProjectId: (id: string) => void; projects: Project[]; onCreateTask: (payload: CreateTaskPayload) => Promise<void>; onChangeStatus: (taskId: string, status: TaskStatus) => Promise<void>; onDeleteTask: (taskId: string) => Promise<void> }) {
+function BoardPanel({ tasks, tasksLoading, dark, members, membersLoading, selectedProject, setSelectedProjectId, projects, onCreateTask, onChangeStatus, onDeleteTask, onAddMember, onRemoveMember }: { tasks: Task[]; tasksLoading: boolean; dark: boolean; members: MemberAvatar[]; membersLoading: boolean; selectedProject: Project | null; setSelectedProjectId: (id: string) => void; projects: Project[]; onCreateTask: (payload: CreateTaskPayload) => Promise<void>; onChangeStatus: (taskId: string, status: TaskStatus) => Promise<void>; onDeleteTask: (taskId: string) => Promise<void>; onAddMember: (email: string) => Promise<void>; onRemoveMember: (userId: string) => Promise<void> }) {
   const [showCreate, setShowCreate] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | null>(null);
@@ -344,6 +375,7 @@ function BoardPanel({ tasks, tasksLoading, dark, members, membersLoading, select
         {(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((k) => <button key={k} className={`filter-pill${priorityFilter === k ? ' on' : ''}`} onClick={() => setPriorityFilter(priorityFilter === k ? null : k)}><span style={{ width: 6, height: 6, borderRadius: '50%', background: P[k].dot }} />{P[k].label}</button>)}
         {members.map((m) => <button key={m.id} className={`filter-pill${assigneeFilter === m.id ? ' on' : ''}`} onClick={() => setAssigneeFilter(assigneeFilter === m.id ? null : m.id)}><Avatar user={m} size={16} />{m.name}</button>)}
         <div className="search-box">🔍<input placeholder="Search tasks..." value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+        <button className="btn btn-ghost btn-sm" onClick={() => { setShowMembers(true); setInviteError(null); }}><span className="member-count-badge">👥 {members.length} Members</span></button>
         <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>+ New Task</button>
       </div>
       {(tasksLoading || membersLoading) && <div className="loading-state"><div className="spinner" /><span>Loading board data...</span></div>}
@@ -356,6 +388,7 @@ function BoardPanel({ tasks, tasksLoading, dark, members, membersLoading, select
         })}
       </div>
       {showCreate && <div className="overlay" onClick={(e) => e.target === e.currentTarget && setShowCreate(false)}><div className="modal"><div className="modal-ttl">New Task ✦</div><div className="modal-sub">Add a task to the selected project</div><div className="field"><label className="field-label">Title *</label><input className="field-input" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} /></div><div className="field"><label className="field-label">Description</label><textarea className="field-input" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} /></div><div className="field-row"><div className="field"><label className="field-label">Priority</label><select className="field-input" value={form.priority} onChange={(e) => setForm((f) => ({ ...f, priority: e.target.value as TaskPriority }))}>{Object.keys(P).map((k) => <option key={k} value={k}>{P[k as TaskPriority].label}</option>)}</select></div><div className="field"><label className="field-label">Assignee</label><select className="field-input" value={form.assigneeId} onChange={(e) => setForm((f) => ({ ...f, assigneeId: e.target.value }))}><option value="">Unassigned</option>{members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select></div></div><div className="field"><label className="field-label">Deadline</label><input type="date" className="field-input" value={form.deadline} onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))} /></div><div className="modal-foot"><button className="btn btn-ghost" onClick={() => setShowCreate(false)}>Cancel</button><button className="btn btn-primary" onClick={async () => { if (!form.title.trim()) return; await onCreateTask({ title: form.title.trim(), description: form.description.trim() || undefined, priority: form.priority, deadline: form.deadline || undefined, assigneeId: form.assigneeId || undefined }); setShowCreate(false); setForm({ title: '', description: '', priority: 'MEDIUM', deadline: '', assigneeId: '' }); }}>✦ Create Task</button></div></div></div>}
+      {showMembers && <div className="overlay" onClick={(e) => e.target === e.currentTarget && setShowMembers(false)}><div className="modal"><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}><div className="modal-ttl">Team Members ✦</div><button className="btn btn-ghost btn-icon btn-sm" onClick={() => setShowMembers(false)}>✕</button></div><div className="modal-sub">Manage members for {selectedProject?.name || 'this project'}</div>{members.length === 0 ? <div className="member-empty"><div className="member-empty-icon">👥</div><div>No members yet</div><div style={{ fontSize: 12 }}>Invite team members by email below</div></div> : <div className="member-list">{members.map((m) => <div key={m.id} className="member-row"><Avatar user={m} size={32} /><div className="member-info"><div className="member-name">{m.name}</div></div><span className="member-role-badge member">Member</span><button className="member-remove-btn" onClick={async () => { await onRemoveMember(m.id); }}>Remove</button></div>)}</div>}<div className="invite-section"><div className="field-label" style={{ marginBottom: 10 }}>Invite by Email</div>{inviteError && <div className="app-error" style={{ marginBottom: 10 }}>{inviteError}</div>}<div className="invite-row"><div className="field"><input className="field-input" type="email" placeholder="colleague@email.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} /></div><button className="btn btn-primary" disabled={inviteLoading || !inviteEmail.trim()} onClick={async () => { if (!inviteEmail.trim()) return; setInviteLoading(true); setInviteError(null); try { await onAddMember(inviteEmail.trim()); setInviteEmail(''); } catch (err) { setInviteError(isAxiosError(err) ? err.response?.data?.message ?? 'Failed to invite member' : 'Failed to invite member'); } finally { setInviteLoading(false); } }}>{inviteLoading ? 'Inviting...' : '+ Invite'}</button></div></div></div></div>}
       {selectedTask && <div className="overlay" style={{ background: 'transparent' }} onClick={() => setSelectedTask(null)}><div className="drawer" onClick={(e) => e.stopPropagation()}><div className="drawer-hdr"><div><div className="drawer-ttl">{selectedTask.title}</div></div><button className="btn btn-ghost btn-icon btn-sm" onClick={() => setSelectedTask(null)}>✕</button></div>{selectedTask.description && <div className="dr-sec"><div className="dr-sec-label">Description</div><div style={{ fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.65 }}>{selectedTask.description}</div></div>}<div className="dr-sec"><div className="dr-sec-label">Details</div><div className="dr-row"><span className="dr-key">Priority</span><PBadge priority={selectedTask.priority} dark={dark} /></div><div className="dr-row"><span className="dr-key">Deadline</span><DLChip deadline={selectedTask.deadline} status={selectedTask.status} /></div><div className="dr-row"><span className="dr-key">Assignee</span><span className="dr-val">{selectedTask.assigneeName || 'Unassigned'}</span></div><div className="dr-row"><span className="dr-key">Created</span><span className="dr-val">{fmtDate(selectedTask.createdAt)}</span></div></div><div className="dr-sec"><div className="dr-sec-label">Move to</div><div className="trans-grid">{(VALID_TRANSITIONS[selectedTask.status] || []).map((s) => <button key={s} className="trans-btn" onClick={async () => { await onChangeStatus(selectedTask.id, s); setSelectedTask(null); }}>-&gt; {COLUMNS.find((x) => x.id === s)?.label ?? s}</button>)}</div></div><button className="btn btn-danger btn-sm" onClick={async () => { await onDeleteTask(selectedTask.id); setSelectedTask(null); }}>Delete Task</button></div></div>}
     </div>
   );

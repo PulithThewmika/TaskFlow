@@ -33,16 +33,19 @@ From authentication to board workflows, every part is designed for speed, clarit
 ## Product Highlights
 
 ### Team-Centered Workflow
+
 - Create projects quickly with metadata and visual tags
 - Break work into prioritized tasks with deadlines
 - Move work through `TODO -> IN_PROGRESS -> IN_REVIEW -> DONE`
 
 ### Built for Real Collaboration
+
 - Clean, responsive UI optimized for daily use
 - Project and task views designed for fast decision-making
 - Backend APIs ready for team-scale extensions
 
 ### Quality as a Feature
+
 - Backend tests with JUnit 5 and Mockito
 - Frontend E2E coverage with Playwright
 - Type-safe frontend and API integration
@@ -54,14 +57,17 @@ From authentication to board workflows, every part is designed for speed, clarit
 Add your own media files into `docs/media/` and these sections will render beautifully on GitHub.
 
 ### App Screenshots
+
 ![Dashboard](docs/media/dashboard.svg)
 ![Projects](docs/media/projects.svg)
 ![Task Board](docs/media/board.svg)
 
 ### Demo Animation (GIF)
+
 ![TaskFlow Demo](docs/media/taskflow-demo.gif)
 
 ### Optional Video Walkthrough
+
 [Watch product demo](docs/media/taskflow-demo.mp4)
 
 > Tip: Keep screenshot widths around 1600px for crisp GitHub previews.
@@ -80,12 +86,14 @@ Add your own media files into `docs/media/` and these sections will render beaut
 ## Quick Start
 
 ### 1) Run Backend
+
 ```bash
 cd taskflow-backend
 ./mvnw spring-boot:run
 ```
 
 ### 2) Run Frontend
+
 ```bash
 cd taskflow-frontend
 npm install
@@ -93,6 +101,7 @@ npm run dev
 ```
 
 ### 3) Run Tests
+
 ```bash
 cd taskflow-backend
 ./mvnw test
@@ -119,3 +128,8 @@ npx playwright test --headed
 ## Project Status
 
 TaskFlow is actively developed and ready for demos, evaluations, and portfolio showcasing.
+
+### Latest Updates
+
+- **Frontend Architecture Rebuild:** Introduced a new app shell, layout components, and global CSS (Tailwind & core styles) to modernize the TaskFlow application dashboard.
+- **Backend Optimizations:** Addressed deprecated APIs and cleaned up unused imports in dashboard and task services to maintain code quality.
