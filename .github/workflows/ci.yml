@@ -44,8 +44,6 @@ jobs:
     - name: Run JUnit 5 tests
       working-directory: ./taskflow-backend
       run: mvn test -Dspring.profiles.active=test -Dde.flapdoodle.os.override=Linux\|X86_64\|Ubuntu\|Ubuntu_22_04
-      env:
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     # ── Package the JAR (skip tests — already ran above) ──────────────────
     - name: Package backend JAR
