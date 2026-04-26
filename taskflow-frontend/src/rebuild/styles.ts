@@ -153,6 +153,18 @@ html, body, #root { height:100%; font-family:'Outfit', sans-serif; background:va
 .theme-toggle { width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--bg-elevated); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:17px; }
 .theme-toggle:hover { background:var(--bg-hover); border-color:var(--border-mid); }
 .color-picker { display:flex; gap:7px; flex-wrap:wrap; } .color-swatch { width:28px; height:28px; border-radius:8px; cursor:pointer; border:3px solid transparent; } .color-swatch.selected { border-color:var(--text-primary); }
+.auth-toggle-btn { margin-top:12px; width:100%; border:none; background:transparent; color:var(--accent); font-size:12.5px; cursor:pointer; }
+.app-error { margin:8px 0; padding:10px 12px; border-radius:10px; border:1px solid rgba(239,68,68,0.25); background:rgba(239,68,68,0.10); color:#f87171; font-size:12px; }
+.loading-state { display:flex; align-items:center; justify-content:center; gap:10px; padding:18px; color:var(--text-secondary); font-size:13px; }
+.spinner { width:16px; height:16px; border:2px solid var(--border-mid); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.toast-wrap { position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:200; }
+.toast { min-width:220px; max-width:320px; border-radius:10px; padding:10px 12px; font-size:12.5px; border:1px solid var(--border-mid); background:var(--bg-elevated); color:var(--text-primary); box-shadow:var(--shadow-md); }
+.toast.success { border-color:rgba(16,185,129,0.30); background:rgba(16,185,129,0.12); color:#6ee7b7; }
+.toast.error { border-color:rgba(239,68,68,0.30); background:rgba(239,68,68,0.12); color:#fca5a5; }
+.project-select { min-width:220px; max-width:300px; margin-right:8px; margin-bottom:0; }
+.active-prj { border-color:rgba(99,102,241,0.35) !important; }
+.empty-state { padding:18px; text-align:center; color:var(--text-muted); font-size:13px; }
 @media (max-width: 1024px){ .stats-grid{grid-template-columns:repeat(2,1fr)} .proj-grid,.projects-grid,.feat-grid,.rules-grid{grid-template-columns:1fr 1fr} .hero-board{grid-template-columns:repeat(2,1fr)} .flow-steps{grid-template-columns:1fr 1fr; gap:16px} .flow-steps::before{display:none} }
 @media (max-width: 720px){ .sidebar{display:none} .land-nav,.land-features,.land-flow,.land-tech,.land-rules,.land-cta,.land-footer,.land-hero{padding-left:16px;padding-right:16px} .feat-grid,.projects-grid,.proj-grid,.rules-grid,.stats-grid,.hero-board,.flow-steps{grid-template-columns:1fr} .land-nav-links{display:none} .land-footer{flex-direction:column;gap:10px} }
 `;
