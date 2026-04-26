@@ -3,6 +3,7 @@ name: E2E Tests
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch: # Manual trigger button in GitHub Actions UI
 
 jobs:
