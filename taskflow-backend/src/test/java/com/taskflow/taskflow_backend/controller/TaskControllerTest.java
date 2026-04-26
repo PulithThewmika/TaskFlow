@@ -50,7 +50,16 @@ class TaskControllerTest {
     @MockitoBean
     private TaskService taskService;
 
+
     private TaskResponse mockTaskResponse;
+    @MockitoBean
+    private com.taskflow.taskflow_backend.util.JwtUtil jwtUtil;
+
+    @Test
+    @DisplayName("GET /api/projects/1/tasks should be accessible")
+    void getTasks_shouldReturnOk() throws Exception {
+        when(taskService.getTasksByProjectId("1")).thenReturn(Collections.emptyList());
+    }
 
     @BeforeEach
     void setUp() {
