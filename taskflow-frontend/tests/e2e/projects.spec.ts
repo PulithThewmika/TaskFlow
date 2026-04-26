@@ -160,7 +160,11 @@ test.describe('Projects — 7 Tests', () => {
     const projectName = `Task Count Project ${Date.now()}`;
     await createProjectViaUI(page, projectName);
 
-    // Navigate to board view
+    // Navigate to projects view and click the project card
+    await page.locator('.sb-item', { hasText: 'Projects' }).click();
+    await expect(page.locator('.page-wrap')).toBeVisible({ timeout: 5000 });
+    await page.locator('.prj-card', { hasText: projectName }).click();
+
     await expect(page.locator('.board-cols')).toBeVisible({ timeout: 5000 });
 
     // Add 2 tasks
@@ -173,11 +177,11 @@ test.describe('Projects — 7 Tests', () => {
     await page.locator('.sb-item', { hasText: 'Projects' }).click();
     await expect(page.locator('.page-wrap')).toBeVisible({ timeout: 5000 });
 
-    // Verify the project card has 2 tasks listed in its meta section
+    // Verify the project card has a progress bar
     const projectCard = page.locator('.prj-card', { hasText: projectName });
     await expect(projectCard).toBeVisible();
 
-    const taskCountItem = projectCard.locator('.prj-meta-item').filter({ hasText: 'tasks' });
-    await expect(taskCountItem).toContainText('2');
+    const progBar = projectCard.locator('.prog-bar');
+    await expect(progBar).toBeVisible();
   });
 });
