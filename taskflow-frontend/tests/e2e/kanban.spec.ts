@@ -63,19 +63,26 @@ test.describe('Kanban Board — Drag and Drop & Transitions', () => {
     const inReviewCol = page.locator('.board-col').filter({ hasText: 'In Review' }).locator('.col-body');
     const doneCol = page.locator('.board-col').filter({ hasText: 'Done' }).locator('.col-body');
 
+    async function safeDrag(source: import('@playwright/test').Locator, target: import('@playwright/test').Locator) {
+      await source.hover();
+      await page.mouse.down();
+      await page.waitForTimeout(300);
+      await target.hover();
+      await page.waitForTimeout(300);
+      await page.mouse.up();
+      await page.waitForTimeout(1000); // Wait for React to process drop
+    }
+
     // 1. TODO -> IN_PROGRESS
-    await page.waitForTimeout(1000);
-    await taskCard.dragTo(inProgressCol);
+    await safeDrag(taskCard, inProgressCol);
     await expect(inProgressCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 2. IN_PROGRESS -> IN_REVIEW
-    await page.waitForTimeout(1500);
-    await taskCard.dragTo(inReviewCol);
+    await safeDrag(taskCard, inReviewCol);
     await expect(inReviewCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 3. IN_REVIEW -> DONE
-    await page.waitForTimeout(1500);
-    await taskCard.dragTo(doneCol);
+    await safeDrag(taskCard, doneCol);
     await expect(doneCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
   });
 
