@@ -67,11 +67,11 @@ class DashboardServiceTest {
         DashboardStatsResponse stats = dashboardService.getStats();
 
         assertAll(
-            () -> assertEquals(5,  stats.getTotal(),      "total should be 5"),
-            () -> assertEquals(2,  stats.getTodo(),       "todo count should be 2"),
-            () -> assertEquals(1,  stats.getInProgress(), "inProgress count should be 1"),
-            () -> assertEquals(1,  stats.getInReview(),   "inReview count should be 1"),
-            () -> assertEquals(1,  stats.getDone(),       "done count should be 1")
+            () -> assertEquals(5,  stats.getTotalTasks(),      "total should be 5"),
+            () -> assertEquals(2,  stats.getTodoCount(),       "todo count should be 2"),
+            () -> assertEquals(1,  stats.getInProgressCount(), "inProgress count should be 1"),
+            () -> assertEquals(1,  stats.getInReviewCount(),   "inReview count should be 1"),
+            () -> assertEquals(1,  stats.getDoneCount(),       "done count should be 1")
         );
     }
 
@@ -82,12 +82,12 @@ class DashboardServiceTest {
         DashboardStatsResponse stats = dashboardService.getStats();
 
         assertAll(
-            () -> assertEquals(0, stats.getTotal(),      "total should be 0"),
-            () -> assertEquals(0, stats.getTodo(),       "todo should be 0"),
-            () -> assertEquals(0, stats.getInProgress(), "inProgress should be 0"),
-            () -> assertEquals(0, stats.getInReview(),   "inReview should be 0"),
-            () -> assertEquals(0, stats.getDone(),       "done should be 0"),
-            () -> assertEquals(0, stats.getOverdue(),    "overdue should be 0")
+            () -> assertEquals(0, stats.getTotalTasks(),      "total should be 0"),
+            () -> assertEquals(0, stats.getTodoCount(),       "todo should be 0"),
+            () -> assertEquals(0, stats.getInProgressCount(), "inProgress should be 0"),
+            () -> assertEquals(0, stats.getInReviewCount(),   "inReview should be 0"),
+            () -> assertEquals(0, stats.getDoneCount(),       "done should be 0"),
+            () -> assertEquals(0, stats.getOverdueCount(),    "overdue should be 0")
         );
     }
 
@@ -101,9 +101,9 @@ class DashboardServiceTest {
 
         DashboardStatsResponse stats = dashboardService.getStats();
 
-        assertTrue(stats.getOverdue() > 0,
+        assertTrue(stats.getOverdueCount() > 0,
             "Tasks with past deadline and non-DONE status must increment overdueCount");
-        assertEquals(2, stats.getOverdue());
+        assertEquals(2, stats.getOverdueCount());
     }
 
     // ─── 4 ──────────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ class DashboardServiceTest {
 
         DashboardStatsResponse stats = dashboardService.getStats();
 
-        assertEquals(0, stats.getOverdue(),
+        assertEquals(0, stats.getOverdueCount(),
             "DONE tasks must never be counted as overdue even if deadline has passed");
     }
 }
