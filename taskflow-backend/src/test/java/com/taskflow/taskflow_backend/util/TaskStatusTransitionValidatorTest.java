@@ -62,15 +62,15 @@ class TaskStatusTransitionValidatorTest {
     }
 
     @Test
-    @DisplayName("7. doneToAny_IsInvalid — DONE → TODO / IN_PROGRESS / IN_REVIEW all return false")
-    void doneToAny_IsInvalid() {
+    @DisplayName("7. doneToAny_IsValid — DONE → TODO / IN_PROGRESS / IN_REVIEW all return true")
+    void doneToAny_IsValid() {
         assertAll(
-            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
-                    TaskStatus.DONE, TaskStatus.TODO),        "DONE → TODO must be false"),
-            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
-                    TaskStatus.DONE, TaskStatus.IN_PROGRESS), "DONE → IN_PROGRESS must be false"),
-            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
-                    TaskStatus.DONE, TaskStatus.IN_REVIEW),   "DONE → IN_REVIEW must be false")
+            () -> assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.TODO),        "DONE → TODO must be true"),
+            () -> assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.IN_PROGRESS), "DONE → IN_PROGRESS must be true"),
+            () -> assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.IN_REVIEW),   "DONE → IN_REVIEW must be true")
         );
     }
 
