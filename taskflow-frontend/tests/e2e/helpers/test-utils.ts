@@ -139,7 +139,5 @@ export async function createTaskViaUI(page: Page, title: string, priority?: stri
 
   // Click "Create Task"
   await page.getByRole('button', { name: '✦ Create Task' }).click();
-
-  // Wait for the modal to close
   await expect(page.locator('.modal')).not.toBeVisible({ timeout: 5000 });
 }
