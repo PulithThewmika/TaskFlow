@@ -38,7 +38,7 @@ jobs:
       - name: Run E2E Tests (Backend + Frontend + Playwright)
         env:
           MONGO_URI: mongodb://localhost:27017/taskflow_e2e_db
-          JWT_SECRET: "your_super_secret_key_that_is_long_enough_for_hs256"
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           CI: true
         run: |
           # 1. Start Backend
