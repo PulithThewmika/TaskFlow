@@ -27,6 +27,9 @@ class TaskControllerTest {
     @MockitoBean
     private TaskService taskService;
 
+    @MockitoBean
+    private com.taskflow.taskflow_backend.util.JwtUtil jwtUtil;
+
     @Test
     @DisplayName("GET /api/projects/1/tasks should be accessible")
     void getTasks_shouldReturnOk() throws Exception {
