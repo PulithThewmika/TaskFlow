@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { uniqueEmail, registerUser, createProjectViaUI, createTaskViaUI } from './helpers/test-utils';
+import { uniqueEmail, registerUser, loginUser, createProjectViaUI, createTaskViaUI } from './helpers/test-utils';
 
 test.describe('Kanban Board — Drag and Drop & Transitions', () => {
 
@@ -9,12 +9,7 @@ test.describe('Kanban Board — Drag and Drop & Transitions', () => {
     const name = 'Kanban Test User';
 
     await registerUser(page, name, email, password);
-    await expect(page.getByText('Sign in to your workspace')).toBeVisible({ timeout: 10000 });
-
-    await page.locator('.field').filter({ hasText: 'Email' }).locator('.field-input').fill(email);
-    await page.locator('.field').filter({ hasText: 'Password' }).locator('.field-input').fill(password);
-    await page.getByRole('button', { name: /Sign in/i }).click();
-    await expect(page.locator('.app-shell')).toBeVisible({ timeout: 10000 });
+    await loginUser(page, email, password);
 
     const projectName = `Kanban Project ${Date.now()}`;
     await createProjectViaUI(page, projectName);
@@ -62,20 +57,24 @@ test.describe('Kanban Board — Drag and Drop & Transitions', () => {
     await setupBoard(page);
     await createTaskViaUI(page, 'Multi Step Task');
 
-    const taskCard = page.locator('.task-card', { hasText: 'Multi Step Task' });
+    const taskCard = page.locator('.task-card', { hasText: 'Multi Step Task' }).first();
+
     const inProgressCol = page.locator('.board-col').filter({ hasText: 'In Progress' }).locator('.col-body');
     const inReviewCol = page.locator('.board-col').filter({ hasText: 'In Review' }).locator('.col-body');
     const doneCol = page.locator('.board-col').filter({ hasText: 'Done' }).locator('.col-body');
 
     // 1. TODO -> IN_PROGRESS
+    await page.waitForTimeout(1000);
     await taskCard.dragTo(inProgressCol);
     await expect(inProgressCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 2. IN_PROGRESS -> IN_REVIEW
+    await page.waitForTimeout(1500);
     await taskCard.dragTo(inReviewCol);
     await expect(inReviewCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 3. IN_REVIEW -> DONE
+    await page.waitForTimeout(1500);
     await taskCard.dragTo(doneCol);
     await expect(doneCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
   });
