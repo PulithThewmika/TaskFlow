@@ -4,64 +4,82 @@ import com.taskflow.taskflow_backend.enums.TaskStatus;
 import com.taskflow.taskflow_backend.exception.InvalidStatusTransitionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Task Status Transition Validator Tests")
+/**
+ * Section 3.6 — TaskStatusTransitionValidatorTest
+ * 8 plain JUnit 5 tests — no Spring context needed.
+ * Calls static methods directly on TaskStatusTransitionValidator.
+ */
+@DisplayName("3.6 TaskStatusTransitionValidator Tests")
 class TaskStatusTransitionValidatorTest {
 
-    // VALID transitions — should return true
-    @ParameterizedTest(name = "{0} → {1} should be VALID")
-    @CsvSource({
-        "TODO, IN_PROGRESS",
-        "IN_PROGRESS, IN_REVIEW",
-        "IN_PROGRESS, TODO",
-        "IN_REVIEW, DONE",
-        "IN_REVIEW, IN_PROGRESS"
-    })
-    void validTransitions_shouldReturnTrue(TaskStatus from, TaskStatus to) {
-        assertTrue(TaskStatusTransitionValidator.isValidTransition(from, to));
+    // ─── VALID transitions (should return true) ──────────────────────────────
+
+    @Test
+    @DisplayName("1. todoToInProgress_IsValid — isValidTransition(TODO, IN_PROGRESS) → true")
+    void todoToInProgress_IsValid() {
+        assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.TODO, TaskStatus.IN_PROGRESS));
     }
 
-    // INVALID transitions — should return false
-    @ParameterizedTest(name = "{0} → {1} should be INVALID")
-    @CsvSource({
-        "TODO, DONE",
-        "TODO, IN_REVIEW",
-        "DONE, TODO",
-        "DONE, IN_PROGRESS",
-        "DONE, IN_REVIEW"
-    })
-    void invalidTransitions_shouldReturnFalse(TaskStatus from, TaskStatus to) {
-        assertFalse(TaskStatusTransitionValidator.isValidTransition(from, to));
+    @Test
+    @DisplayName("2. inProgressToInReview_IsValid — isValidTransition(IN_PROGRESS, IN_REVIEW) → true")
+    void inProgressToInReview_IsValid() {
+        assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.IN_PROGRESS, TaskStatus.IN_REVIEW));
     }
 
-    // Null handling
-    @ParameterizedTest(name = "null input [{0}, {1}] should return false")
-    @MethodSource("nullInputProvider")
-    void nullInputs_shouldReturnFalse(TaskStatus from, TaskStatus to) {
-        assertFalse(TaskStatusTransitionValidator.isValidTransition(from, to));
+    @Test
+    @DisplayName("3. inProgressToTodo_IsValid — isValidTransition(IN_PROGRESS, TODO) → true (rollback allowed)")
+    void inProgressToTodo_IsValid() {
+        assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.IN_PROGRESS, TaskStatus.TODO));
     }
 
-    static Stream<Arguments> nullInputProvider() {
-        return Stream.of(
-            Arguments.of(null, TaskStatus.TODO),
-            Arguments.of(TaskStatus.TODO, null),
-            Arguments.of(null, null)
+    @Test
+    @DisplayName("4. inReviewToDone_IsValid — isValidTransition(IN_REVIEW, DONE) → true")
+    void inReviewToDone_IsValid() {
+        assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.IN_REVIEW, TaskStatus.DONE));
+    }
+
+    @Test
+    @DisplayName("5. inReviewToInProgress_IsValid — isValidTransition(IN_REVIEW, IN_PROGRESS) → true (send back allowed)")
+    void inReviewToInProgress_IsValid() {
+        assertTrue(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.IN_REVIEW, TaskStatus.IN_PROGRESS));
+    }
+
+    // ─── INVALID transitions (should return false) ───────────────────────────
+
+    @Test
+    @DisplayName("6. todoToDone_IsInvalid — isValidTransition(TODO, DONE) → false (skipping not allowed)")
+    void todoToDone_IsInvalid() {
+        assertFalse(TaskStatusTransitionValidator.isValidTransition(
+                TaskStatus.TODO, TaskStatus.DONE));
+    }
+
+    @Test
+    @DisplayName("7. doneToAny_IsInvalid — DONE → TODO / IN_PROGRESS / IN_REVIEW all return false")
+    void doneToAny_IsInvalid() {
+        assertAll(
+            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.TODO),        "DONE → TODO must be false"),
+            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.IN_PROGRESS), "DONE → IN_PROGRESS must be false"),
+            () -> assertFalse(TaskStatusTransitionValidator.isValidTransition(
+                    TaskStatus.DONE, TaskStatus.IN_REVIEW),   "DONE → IN_REVIEW must be false")
         );
     }
 
-    // Validate throws exception on bad transition
+    // ─── validate() throws on invalid transition ─────────────────────────────
+
     @Test
-    @DisplayName("validate() should throw InvalidStatusTransitionException for DONE → TODO")
-    void validate_shouldThrowException_whenTransitionIsInvalid() {
+    @DisplayName("8. validate_InvalidTransition_ThrowsException — validate(TODO, DONE) throws InvalidStatusTransitionException")
+    void validate_InvalidTransition_ThrowsException() {
         assertThrows(InvalidStatusTransitionException.class,
-            () -> TaskStatusTransitionValidator.validate(TaskStatus.DONE, TaskStatus.TODO));
+            () -> TaskStatusTransitionValidator.validate(TaskStatus.TODO, TaskStatus.DONE));
     }
 }
