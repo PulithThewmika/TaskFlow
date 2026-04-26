@@ -17,43 +17,6 @@ export interface PriorityMeta {
   darkColor: string;
 }
 
-export interface AvatarUser {
-  id: number;
-  name: string;
-  color: string;
-  initials: string;
-}
-
-export interface ProjectItem {
-  id: number;
-  name: string;
-  color: string;
-  members: number;
-  tag: string;
-}
-
-export interface TaskItem {
-  id: number;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  assigneeId: number | null;
-  deadline: string | null;
-  projectId: number;
-  createdAt: string;
-}
-
-export interface ActivityItem {
-  id: number;
-  user: string;
-  action: string;
-  target: string;
-  to: TaskStatus | null;
-  time: string;
-  avatar: AvatarUser;
-}
-
 export const COLUMNS: Column[] = [
   { id: 'TODO', label: 'To Do', color: '#6366f1', light: '#eef2ff' },
   { id: 'IN_PROGRESS', label: 'In Progress', color: '#f59e0b', light: '#fffbeb' },
@@ -96,38 +59,6 @@ export const P: Record<TaskPriority, PriorityMeta> = {
   },
 };
 
-export const AVATARS: AvatarUser[] = [
-  { id: 1, name: 'Pmax', color: '#6366f1', initials: 'PM' },
-  { id: 2, name: 'Sarah', color: '#ec4899', initials: 'SK' },
-  { id: 3, name: 'Ravi', color: '#f59e0b', initials: 'RK' },
-  { id: 4, name: 'Lena', color: '#10b981', initials: 'LT' },
-];
-
-export const PROJECTS: ProjectItem[] = [
-  { id: 1, name: 'TaskFlow Platform', color: '#6366f1', members: 4, tag: 'Core' },
-  { id: 2, name: 'Mobile App', color: '#ec4899', members: 3, tag: 'Mobile' },
-  { id: 3, name: 'API Gateway', color: '#f59e0b', members: 2, tag: 'Infra' },
-];
-
-export const SEED_TASKS: TaskItem[] = [
-  { id: 1, title: 'Design system tokens', description: 'Set up color, spacing, and typography tokens in Figma and export to CSS.', status: 'DONE', priority: 'HIGH', assigneeId: 1, deadline: '2025-04-10', projectId: 1, createdAt: '2025-03-28' },
-  { id: 2, title: 'JWT auth middleware', description: 'Implement Spring Security filter chain with JWT validation and role-based access.', status: 'DONE', priority: 'CRITICAL', assigneeId: 3, deadline: '2025-04-12', projectId: 1, createdAt: '2025-03-29' },
-  { id: 3, title: 'Kanban drag & drop', description: 'Integrate DnD kit for smooth task column transitions with optimistic UI updates.', status: 'IN_REVIEW', priority: 'HIGH', assigneeId: 1, deadline: '2025-04-28', projectId: 1, createdAt: '2025-04-01' },
-  { id: 4, title: 'Playwright E2E suite', description: 'Write full user journey tests covering login, project create, task CRUD, and board moves.', status: 'IN_REVIEW', priority: 'MEDIUM', assigneeId: 2, deadline: '2025-04-30', projectId: 1, createdAt: '2025-04-02' },
-  { id: 5, title: 'Dashboard stats API', description: 'Build /api/dashboard/stats endpoint aggregating task counts by status and overdue detection.', status: 'IN_PROGRESS', priority: 'MEDIUM', assigneeId: 3, deadline: '2025-05-03', projectId: 1, createdAt: '2025-04-05' },
-  { id: 6, title: 'Notification service', description: 'Email + in-app notifications for task assignments, deadline reminders, and status changes.', status: 'IN_PROGRESS', priority: 'LOW', assigneeId: 4, deadline: '2025-05-10', projectId: 1, createdAt: '2025-04-06' },
-  { id: 7, title: 'Member invite flow', description: 'Email invite with secure token-based onboarding and project role assignment.', status: 'TODO', priority: 'MEDIUM', assigneeId: 2, deadline: '2025-05-15', projectId: 1, createdAt: '2025-04-07' },
-  { id: 8, title: 'Activity feed', description: 'Real-time feed of last 10 project actions using server-sent events or WebSocket.', status: 'TODO', priority: 'LOW', assigneeId: null, deadline: '2025-05-20', projectId: 1, createdAt: '2025-04-08' },
-  { id: 9, title: 'File attachments', description: 'Allow uploading screenshots and documents to tasks with S3/R2 storage backend.', status: 'TODO', priority: 'LOW', assigneeId: null, deadline: '2025-05-25', projectId: 1, createdAt: '2025-04-09' },
-];
-
-export const ACTIVITY: ActivityItem[] = [
-  { id: 1, user: 'Pmax', action: 'moved', target: 'Kanban drag & drop', to: 'IN_REVIEW', time: '2m ago', avatar: AVATARS[0] },
-  { id: 2, user: 'Sarah', action: 'completed', target: 'Playwright E2E suite', to: null, time: '18m ago', avatar: AVATARS[1] },
-  { id: 3, user: 'Ravi', action: 'created', target: 'Notification service', to: null, time: '1h ago', avatar: AVATARS[2] },
-  { id: 4, user: 'Lena', action: 'assigned', target: 'Activity feed', to: null, time: '3h ago', avatar: AVATARS[3] },
-  { id: 5, user: 'Pmax', action: 'updated priority of', target: 'JWT auth middleware', to: null, time: '5h ago', avatar: AVATARS[0] },
-];
 
 export const VALID_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
   TODO: ['IN_PROGRESS'],
@@ -143,13 +74,6 @@ export const FEATURES = [
   { icon: '⬡', title: 'Smart Deadlines', desc: 'Automatic overdue detection. Visual alerts for tasks past their deadline across all dashboards.' },
   { icon: '⬡', title: 'E2E Test Coverage', desc: 'Playwright test suite covers the full user journey - login, project create, task CRUD, board moves.' },
   { icon: '⬡', title: 'Team Collaboration', desc: 'Invite members by email, assign tasks, track contributions per person with avatar groups.' },
-] as const;
-
-export const STATS_HERO = [
-  { value: '9+', label: 'Tasks Managed' },
-  { value: '4', label: 'Team Members' },
-  { value: '3', label: 'Active Projects' },
-  { value: '100%', label: 'Test Coverage' },
 ] as const;
 
 export const TECH = [
