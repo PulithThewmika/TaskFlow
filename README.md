@@ -58,9 +58,9 @@ Add your own media files into `docs/media/` and these sections will render beaut
 
 ### App Screenshots
 
-![Dashboard](docs/media/dashboard.svg)
-![Projects](docs/media/projects.svg)
-![Task Board](docs/media/board.svg)
+![Dashboard](docs/media/dashboard.png)
+![Projects](docs/media/projects.png)
+![Task Board](docs/media/board.png)
 
 ### Demo Animation (GIF)
 
