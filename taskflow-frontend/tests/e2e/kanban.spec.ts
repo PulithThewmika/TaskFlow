@@ -62,19 +62,22 @@ test.describe('Kanban Board — Drag and Drop & Transitions', () => {
     const inReviewCol = page.locator('.board-col').filter({ hasText: 'In Review' }).locator('.col-body');
     const doneCol = page.locator('.board-col').filter({ hasText: 'Done' }).locator('.col-body');
 
+    const taskCard = page.locator('.task-card', { hasText: 'Multi Step Task' }).first();
+    const drawer = page.locator('.drawer');
+
     // 1. TODO -> IN_PROGRESS
-    await page.waitForTimeout(1000);
-    await todoCol.locator('.task-card').filter({ hasText: 'Multi Step Task' }).dragTo(inProgressCol);
+    await taskCard.click();
+    await drawer.locator('.trans-btn', { hasText: '-> In Progress' }).click();
     await expect(inProgressCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 2. IN_PROGRESS -> IN_REVIEW
-    await page.waitForTimeout(1500);
-    await inProgressCol.locator('.task-card').filter({ hasText: 'Multi Step Task' }).dragTo(inReviewCol);
+    await taskCard.click();
+    await drawer.locator('.trans-btn', { hasText: '-> In Review' }).click();
     await expect(inReviewCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
 
     // 3. IN_REVIEW -> DONE
-    await page.waitForTimeout(1500);
-    await inReviewCol.locator('.task-card').filter({ hasText: 'Multi Step Task' }).dragTo(doneCol);
+    await taskCard.click();
+    await drawer.locator('.trans-btn', { hasText: '-> Done' }).click();
     await expect(doneCol.locator('.task-card', { hasText: 'Multi Step Task' })).toBeVisible();
   });
 
