@@ -169,7 +169,11 @@ export default function RebuildApp() {
   const effectiveProjectId = selectedProjectId || projects[0]?.id || '';
   const { tasks, loading: tasksLoading, error: tasksError, addTask, changeStatus, removeTask } = useTasks(effectiveProjectId);
   useEffect(() => {
-    if (!effectiveProjectId || effectivePage !== 'app') return;
+    if (!effectiveProjectId || effectivePage !== 'app') {
+      setMembers([]);
+      setMembersError(null);
+      return;
+    }
     const loadMembers = async () => {
       try {
         setMembersLoading(true); setMembersError(null);
@@ -190,6 +194,7 @@ export default function RebuildApp() {
         setDashboardStats(stats);
         setRecentTasks(allTasks.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 8));
       } catch (err) {
+        console.error("DASHBOARD CATCH ERROR:", err);
         const message = isAxiosError(err) ? err.response?.data?.message ?? 'Failed to fetch dashboard data' : 'Failed to fetch dashboard data';
         setDashboardError(message); setAllTasksError(message);
       } finally { setDashboardLoading(false); setAllTasksLoading(false); }

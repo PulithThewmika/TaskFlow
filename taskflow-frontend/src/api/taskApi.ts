@@ -23,7 +23,7 @@ export const deleteTask = async (taskId: string): Promise<void> => {
 
 export const getAllTasks = async (): Promise<Task[]> => {
   const projects = await getProjects();
-  if (projects.length === 0) return [];
+  if (!projects || projects.length === 0) return [];
 
   const taskGroups = await Promise.all(projects.map((project) => getTasksByProject(project.id)));
   return taskGroups.flat();
