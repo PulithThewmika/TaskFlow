@@ -28,6 +28,9 @@ export const useTasks = (projectId: string) => {
     if (projectId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchTasks();
+    } else {
+      setTasks([]);
+      setError(null);
     }
   }, [projectId, fetchTasks]);
 
