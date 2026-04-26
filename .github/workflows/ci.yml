@@ -121,6 +121,24 @@ jobs:
         tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1D595BF32F304450AF5C0107E6EFE5D0 }}
         subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_04F80C47DDCE43A4BFA34E2E7E716CC5 }}
 
+    - name: Update Azure App Settings
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: 'TaskFlow-backend'
+        app-settings-json: |
+          [
+            {
+              "name": "MONGO_URI",
+              "value": "${{ secrets.MONGO_URI }}",
+              "slotSetting": false
+            },
+            {
+              "name": "JWT_SECRET",
+              "value": "${{ secrets.JWT_SECRET }}",
+              "slotSetting": false
+            }
+          ]
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
