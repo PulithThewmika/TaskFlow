@@ -2,7 +2,6 @@ package com.taskflow.taskflow_backend.service;
 
 import com.taskflow.taskflow_backend.dto.response.DashboardStatsResponse;
 import com.taskflow.taskflow_backend.enums.TaskStatus;
-import com.taskflow.taskflow_backend.model.Task;
 import com.taskflow.taskflow_backend.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
