@@ -10,6 +10,12 @@ This directory contains technical and operational documentation for TaskFlow.
 - [Testing Guide](TESTING.md)
 - [Media Assets](media/README.md)
 
+### QA Reports
+- [QA Report: Jayaru](QA-JAYARU.md)
+- [QA Report: Kaveen](QA-KAVEEN.md)
+- [QA Report: Lakdinu](QA-LAKDINU.md)
+- [QA Report: Pulith](QA-PULITH.md)
+
 ## Documentation Standards
 
 - Keep examples executable and aligned with current endpoint paths.

@@ -63,8 +63,8 @@ export const P: Record<TaskPriority, PriorityMeta> = {
 export const VALID_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
   TODO: ['IN_PROGRESS'],
   IN_PROGRESS: ['IN_REVIEW', 'TODO'],
-  IN_REVIEW: ['DONE', 'IN_PROGRESS'],
-  DONE: [],
+  IN_REVIEW: ['DONE', 'IN_PROGRESS', 'TODO'],
+  DONE: ['IN_REVIEW', 'IN_PROGRESS', 'TODO'],
 };
 
 export const FEATURES = [

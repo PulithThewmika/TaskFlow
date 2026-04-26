@@ -3,85 +3,145 @@ package com.taskflow.taskflow_backend.service;
 import com.taskflow.taskflow_backend.dto.request.CreateProjectRequest;
 import com.taskflow.taskflow_backend.dto.response.ProjectResponse;
 import com.taskflow.taskflow_backend.exception.ProjectNotFoundException;
-import com.taskflow.taskflow_backend.model.Project;
+import com.taskflow.taskflow_backend.model.User;
+import com.taskflow.taskflow_backend.repository.MemberRepository;
 import com.taskflow.taskflow_backend.repository.ProjectRepository;
+import com.taskflow.taskflow_backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@DisplayName("ProjectService Unit Tests")
+/**
+ * Section 3.3 — ProjectServiceTest
+ * 7 integration tests verifying project creation, retrieval and deletion.
+ * Uses embedded MongoDB via Flapdoodle (auto-configured in "test" profile).
+ */
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("3.3 ProjectService Integration Tests")
 class ProjectServiceTest {
 
-    @Mock
-    private ProjectRepository projectRepository;
+    @Autowired
+    ProjectService projectService;
 
-    @InjectMocks
-    private ProjectService projectService;
+    @Autowired
+    ProjectRepository projectRepository;
 
-    private Project testProject;
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    private User testUser;
 
     @BeforeEach
-    void setUp() {
-        testProject = new Project();
-        testProject.setId("1");
-        testProject.setName("Test Project");
-        testProject.setDescription("Test description");
-        testProject.setColorTag("#3B82F6");
+    void setup() {
+        projectRepository.deleteAll();
+        memberRepository.deleteAll();
+        userRepository.deleteAll();
+
+        testUser = new User();
+        testUser.setName("Test Owner");
+        testUser.setEmail("owner@test.com");
+        testUser.setPassword("password");
+        testUser = userRepository.save(testUser);
     }
 
+    // ─── 1 ──────────────────────────────────────────────────────────────────
     @Test
-    @DisplayName("createProject: should save and return project response")
-    void createProject_shouldSaveAndReturn() {
-        CreateProjectRequest request = new CreateProjectRequest("Test Project", "Test description", "#3B82F6");
-        when(projectRepository.save(any(Project.class))).thenReturn(testProject);
+    @DisplayName("1. createProject_Success — valid request → saved with correct name, description, colorTag")
+    void createProject_Success() {
+        CreateProjectRequest request =
+            new CreateProjectRequest("My Project", "A test project", "#6366f1");
 
-        ProjectResponse response = projectService.createProject(request);
+        ProjectResponse response = projectService.createProject(request, testUser.getEmail());
 
-        assertNotNull(response);
-        assertEquals("Test Project", response.getName());
-        verify(projectRepository, times(1)).save(any(Project.class));
+        assertAll(
+            () -> assertNotNull(response),
+            () -> assertEquals("My Project",      response.getName()),
+            () -> assertEquals("A test project",  response.getDescription()),
+            () -> assertEquals("#6366f1",          response.getColorTag())
+        );
     }
 
+    // ─── 2 ──────────────────────────────────────────────────────────────────
     @Test
-    @DisplayName("getProjectById: should throw ProjectNotFoundException when not found")
-    void getProjectById_shouldThrow_whenNotFound() {
-        when(projectRepository.findById("99")).thenReturn(Optional.empty());
+    @DisplayName("2. createProject_GeneratesId — saved project has a non-null ID")
+    void createProject_GeneratesId() {
+        CreateProjectRequest request =
+            new CreateProjectRequest("ID Project", "desc", "#000000");
 
-        assertThrows(ProjectNotFoundException.class,
-            () -> projectService.getProjectById("99"));
+        ProjectResponse response = projectService.createProject(request, testUser.getEmail());
+
+        assertNotNull(response.getId(), "MongoDB should auto-generate a non-null ID");
+        assertFalse(response.getId().isBlank());
     }
 
+    // ─── 3 ──────────────────────────────────────────────────────────────────
     @Test
-    @DisplayName("getAllProjects: should return list of project responses")
-    void getAllProjects_shouldReturnList() {
-        when(projectRepository.findAll()).thenReturn(List.of(testProject));
+    @DisplayName("3. getAllProjects_ReturnsAll — save 3 projects → getAllProjects returns 3")
+    void getAllProjects_ReturnsAll() {
+        projectService.createProject(new CreateProjectRequest("Alpha",   "d", "#111111"), testUser.getEmail());
+        projectService.createProject(new CreateProjectRequest("Beta",    "d", "#222222"), testUser.getEmail());
+        projectService.createProject(new CreateProjectRequest("Gamma",   "d", "#333333"), testUser.getEmail());
 
         List<ProjectResponse> projects = projectService.getAllProjects();
 
-        assertEquals(1, projects.size());
-        assertEquals("Test Project", projects.get(0).getName());
+        assertEquals(3, projects.size(), "getAllProjects should return all 3 saved projects");
     }
 
+    // ─── 4 ──────────────────────────────────────────────────────────────────
     @Test
-    @DisplayName("deleteProject: should throw when project not found")
-    void deleteProject_shouldThrow_whenNotFound() {
-        when(projectRepository.existsById("99")).thenReturn(false);
+    @DisplayName("4. getAllProjects_EmptyDb_ReturnsEmpty — no projects → returns empty list")
+    void getAllProjects_EmptyDb_ReturnsEmpty() {
+        List<ProjectResponse> projects = projectService.getAllProjects();
 
+        assertNotNull(projects);
+        assertTrue(projects.isEmpty(), "Should return an empty list when no projects exist");
+    }
+
+    // ─── 5 ──────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("5. getProjectById_Found — save then getById → returns correct project")
+    void getProjectById_Found() {
+        ProjectResponse saved = projectService.createProject(
+            new CreateProjectRequest("Find Me", "desc", "#abcdef"), testUser.getEmail());
+
+        ProjectResponse found = projectService.getProjectById(saved.getId());
+
+        assertAll(
+            () -> assertEquals(saved.getId(),   found.getId()),
+            () -> assertEquals("Find Me",        found.getName()),
+            () -> assertEquals("#abcdef",         found.getColorTag())
+        );
+    }
+
+    // ─── 6 ──────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("6. getProjectById_NotFound_ThrowsException — fake ID → ProjectNotFoundException")
+    void getProjectById_NotFound_ThrowsException() {
         assertThrows(ProjectNotFoundException.class,
-            () -> projectService.deleteProject("99"));
+            () -> projectService.getProjectById("non-existent-project-id"));
+    }
 
-        verify(projectRepository, never()).deleteById(any());
+    // ─── 7 ──────────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("7. deleteProject_RemovesFromDb — delete → existsById returns false")
+    void deleteProject_RemovesFromDb() {
+        ProjectResponse saved = projectService.createProject(
+            new CreateProjectRequest("To Delete", "desc", "#ffffff"), testUser.getEmail());
+
+        projectService.deleteProject(saved.getId());
+
+        assertFalse(projectRepository.existsById(saved.getId()),
+            "Project should no longer exist in the database after deletion");
     }
 }

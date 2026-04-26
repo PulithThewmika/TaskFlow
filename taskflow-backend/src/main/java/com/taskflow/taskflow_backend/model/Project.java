@@ -23,6 +23,8 @@ public class Project {
 
     private String colorTag;
 
+    private String ownerId;
+
     private List<Task> tasks = new ArrayList<>();
 
     private List<ProjectMember> members = new ArrayList<>();
@@ -60,6 +62,9 @@ public class Project {
 
     public List<ProjectMember> getMembers() { return members; }
     public void setMembers(List<ProjectMember> members) { this.members = members; }
+
+    public String getOwnerId() { return ownerId; }
+    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
