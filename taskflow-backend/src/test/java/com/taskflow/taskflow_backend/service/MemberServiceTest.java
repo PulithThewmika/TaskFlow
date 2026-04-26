@@ -122,7 +122,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("6. removeMember_Success — after remove, user no longer appears in getMembers")
     void removeMember_Success() {
-        ProjectMember member = memberService.addMember(testProject.getId(), testUser.getEmail());
+        memberService.addMember(testProject.getId(), testUser.getEmail());
 
         memberService.removeMember(testProject.getId(), testUser.getId());
 
