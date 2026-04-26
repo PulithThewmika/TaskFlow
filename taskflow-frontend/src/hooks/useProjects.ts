@@ -40,5 +40,5 @@ export const useProjects = () => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
-  return { projects, loading, error, fetchProjects, addProject, removeProject };
+  return { projects, setProjects, loading, error, fetchProjects, addProject, removeProject };
 };
