@@ -52,27 +52,12 @@ From authentication to board workflows, every part is designed for speed, clarit
 
 ---
 
-## Screenshots and Demo
-
-Add your own media files into `docs/media/` and these sections will render beautifully on GitHub.
-
 ### App Screenshots
 
 ![Dashboard](docs/media/dashboard.png)
 ![Projects](docs/media/projects.png)
 ![Task Board](docs/media/board.png)
 
-### Demo Animation (GIF)
-
-![TaskFlow Demo](docs/media/taskflow-demo.gif)
-
-### Optional Video Walkthrough
-
-[Watch product demo](docs/media/taskflow-demo.mp4)
-
-> Tip: Keep screenshot widths around 1600px for crisp GitHub previews.
-
----
 
 ## Tech Stack
 
